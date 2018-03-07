@@ -1,5 +1,6 @@
 ---
 title: Putting it together
+teaching: 0
 exercises: 20
 questions:
 - "How can I put together the things we've learnt so far?"
@@ -7,6 +8,7 @@ objectives:
 - "To be able to read, subset, plot and write data in one script"
 keypoints:
 - "Intermediate results need to be kept"
+- "Thinking about the location of output files is important to keep things organised"
 source: Rmd
 ---
 
