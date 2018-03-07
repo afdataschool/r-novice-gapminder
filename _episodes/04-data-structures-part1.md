@@ -888,7 +888,7 @@ str(coats)
 
 
 ~~~
- chr [1:5] "tabby" "tortoiseshell" "tortoiseshell" "black" "tabby"
+ chr [1:5] "tabby" "tortoiseshell" "tortoiseshell" "black" ...
 ~~~
 {: .output}
 
@@ -1329,173 +1329,9 @@ str(cats[1,])
 > {: .solution}
 {: .challenge}
 
-## Matrices
 
-Last but not least is the matrix. We can declare a matrix full of zeros:
-
-
-~~~
-matrix_example <- matrix(0, ncol=6, nrow=3)
-matrix_example
-~~~
-{: .language-r}
-
-
-
-~~~
-     [,1] [,2] [,3] [,4] [,5] [,6]
-[1,]    0    0    0    0    0    0
-[2,]    0    0    0    0    0    0
-[3,]    0    0    0    0    0    0
-~~~
-{: .output}
-
-And similar to other data structures, we can ask things about our matrix:
-
-
-~~~
-class(matrix_example)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "matrix"
-~~~
-{: .output}
-
-
-
-~~~
-typeof(matrix_example)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] "double"
-~~~
-{: .output}
-
-
-
-~~~
-str(matrix_example)
-~~~
-{: .language-r}
-
-
-
-~~~
- num [1:3, 1:6] 0 0 0 0 0 0 0 0 0 0 ...
-~~~
-{: .output}
-
-
-
-~~~
-dim(matrix_example)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] 3 6
-~~~
-{: .output}
-
-
-
-~~~
-nrow(matrix_example)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] 3
-~~~
-{: .output}
-
-
-
-~~~
-ncol(matrix_example)
-~~~
-{: .language-r}
-
-
-
-~~~
-[1] 6
-~~~
-{: .output}
 
 > ## Challenge 4
->
-> What do you think will be the result of
-> `length(matrix_example)`?
-> Try it.
-> Were you right? Why / why not?
->
-> > ## Solution to Challenge 4
-> >
-> > What do you think will be the result of
-> > `length(matrix_example)`?
-> >
-> > 
-> > ~~~
-> > matrix_example <- matrix(0, ncol=6, nrow=3)
-> > length(matrix_example)
-> > ~~~
-> > {: .language-r}
-> > 
-> > 
-> > 
-> > ~~~
-> > [1] 18
-> > ~~~
-> > {: .output}
-> >
-> > Because a matrix is a vector with added dimension attributes, `length`
-> > gives you the total number of elements in the matrix.
-> {: .solution}
-{: .challenge}
-
-
-> ## Challenge 5
->
-> Make another matrix, this time containing the numbers 1:50,
-> with 5 columns and 10 rows.
-> Did the `matrix` function fill your matrix by column, or by
-> row, as its default behaviour?
-> See if you can figure out how to change this.
-> (hint: read the documentation for `matrix`!)
->
-> > ## Solution to Challenge 5
-> >
-> > Make another matrix, this time containing the numbers 1:50,
-> > with 5 columns and 10 rows.
-> > Did the `matrix` function fill your matrix by column, or by
-> > row, as its default behaviour?
-> > See if you can figure out how to change this.
-> > (hint: read the documentation for `matrix`!)
-> >
-> > 
-> > ~~~
-> > x <- matrix(1:50, ncol=5, nrow=10)
-> > x <- matrix(1:50, ncol=5, nrow=10, byrow = TRUE) # to fill by row
-> > ~~~
-> > {: .language-r}
-> {: .solution}
-{: .challenge}
-
-
-> ## Challenge 6
 >  Create a list of length two containing a character vector for each of the sections in this part of the workshop:
 >
 >  - Data types
@@ -1504,7 +1340,7 @@ ncol(matrix_example)
 >  Populate each character vector with the names of the data types and data
 >  structures we've seen so far.
 >
-> > ## Solution to Challenge 6
+> > ## Solution to Challenge 4
 > > 
 > > ~~~
 > > dataTypes <- c('double', 'complex', 'integer', 'character', 'logical')
@@ -1519,45 +1355,6 @@ ncol(matrix_example)
 > {: .solution}
 {: .challenge}
 
+## Matrices
 
-> ## Challenge 7
->
-> Consider the R output of the matrix below:
-> 
-> ~~~
->      [,1] [,2]
-> [1,]    4    1
-> [2,]    9    5
-> [3,]   10    7
-> ~~~
-> {: .output}
-> What was the correct command used to write this matrix? Examine
-> each command and try to figure out the correct one before typing them.
-> Think about what matrices the other commands will produce.
->
-> 1. `matrix(c(4, 1, 9, 5, 10, 7), nrow = 3)`
-> 2. `matrix(c(4, 9, 10, 1, 5, 7), ncol = 2, byrow = TRUE)`
-> 3. `matrix(c(4, 9, 10, 1, 5, 7), nrow = 2)`
-> 4. `matrix(c(4, 1, 9, 5, 10, 7), ncol = 2, byrow = TRUE)`
->
-> > ## Solution to Challenge 7
-> >
-> > Consider the R output of the matrix below:
-> > 
-> > ~~~
-> >      [,1] [,2]
-> > [1,]    4    1
-> > [2,]    9    5
-> > [3,]   10    7
-> > ~~~
-> > {: .output}
-> > What was the correct command used to write this matrix? Examine
-> > each command and try to figure out the correct one before typing them.
-> > Think about what matrices the other commands will produce.
-> > 
-> > ~~~
-> > matrix(c(4, 1, 9, 5, 10, 7), ncol = 2, byrow = TRUE)
-> > ~~~
-> > {: .language-r}
-> {: .solution}
-{: .challenge}
+Matrices are another another data structure in R. We will not deal with them in detail in this course. In brief, matrices are vectors, although they have row and column attributes. For more detail, start with `?matrix`.
