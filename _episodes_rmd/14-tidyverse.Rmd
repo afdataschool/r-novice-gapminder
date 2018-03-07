@@ -76,6 +76,25 @@ In the above the same variable (a measurement value) was stored in two different
 
 As well as consistency of the underlying data structure, packages in the tidyverse are also all compatible with the `%>%` operator.
 
+There is a tidyverse package, which doesn't have any functionality, except to import core packages of the tidyverse. 
+```{r}
+library(tidyverse)
+```
+
+is the equivalent of 
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(purrr)
+library(tibble)
+library(stringr)
+library(forcats)
+```
+
+
 ## Other great resources
 
 * [The original tidy data paper](https://www.jstatsoft.org/article/view/v059i10/v59i10.pdf)
