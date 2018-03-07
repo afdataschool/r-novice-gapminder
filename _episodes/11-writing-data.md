@@ -17,12 +17,12 @@ source: Rmd
 
 ## Saving plots
 
-You have already seen how to save the most recent plot you create in `ggplot2`,
-using the command `ggsave`. As a refresher:
+To save plots made with `ggplot()`, there is a convenient function `ggsave()`. If you don't specify a plot object, it will save the most recent plot, at the dimensions of the plot window. Otherwise, you can specify these and other parameters as arguments to `ggsave()`.
 
 
 ~~~
 ggsave("My_most_recent_plot.pdf")
+ggsave("filename", plot_object)
 ~~~
 {: .language-r}
 
@@ -30,56 +30,6 @@ You can save a plot from within RStudio using the 'Export' button
 in the 'Plot' window. This will give you the option of saving as a
 .pdf or as .png, .jpg or other image formats.
 
-Sometimes you will want to save plots without creating them in the
-'Plot' window first. Perhaps you want to make a pdf document with
-multiple pages: each one a different plot, for example. Or perhaps
-you're looping through multiple subsets of a file, plotting data from
-each subset, and you want to save each plot, but obviously can't stop
-the loop to click 'Export' for each one.
-
-In this case you can use a more flexible approach. The function
-`pdf` creates a new pdf device. You can control the size and resolution
-using the arguments to this function.
-
-
-~~~
-pdf("Life_Exp_vs_time.pdf", width=12, height=4)
-ggplot(data=gapminder, aes(x=year, y=lifeExp, colour=country)) +
-  geom_line() +
-  theme(legend.position = "none")
-
-# You then have to make sure to turn off the pdf device!
-
-dev.off()
-~~~
-{: .language-r}
-
-Open up this document and have a look.
-
-> ## Challenge 1
->
-> Rewrite your 'pdf' command to print a second
-> page in the pdf, showing a facet plot (hint: use `facet_grid`)
-> of the same data with one panel per continent.
-> > ## Solution to challenge 1
-> >
-> > 
-> > ~~~
-> > pdf("Life_Exp_vs_time.pdf", width = 12, height = 4)
-> > p <- ggplot(data = gapminder, aes(x = year, y = lifeExp, colour = country)) +
-> >   geom_line() +
-> >   theme(legend.position = "none")
-> > p
-> > p + facet_grid(. ~continent)
-> > dev.off()
-> > ~~~
-> > {: .language-r}
-> {: .solution}
-{: .challenge}
-
-
-The commands `jpeg`, `png` etc. are used similarly to produce
-documents in different formats.
 
 ## Writing data
 
@@ -184,7 +134,7 @@ Australia,1992,17481977,Oceania,77.56,23424.76683
 
 That looks better!
 
-> ## Challenge 2
+> ## Challenge 1
 >
 > Write a data-cleaning script file that subsets the gapminder
 > data to include only data points collected since 1990.
