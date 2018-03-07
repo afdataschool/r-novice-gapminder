@@ -385,11 +385,8 @@ even better.
 > >
 > >
 > >~~~
-> ># A tibble: 2 x 2
-> >  country      mean_lifeExp
-> >  <fct>               <dbl>
-> >1 Iceland              76.5
-> >2 Sierra Leone         36.8
+> >  mean_lifeExp
+> >1     59.47444
 > >~~~
 > >{: .output}
 > Another way to do this is to use the `dplyr` function `arrange()`, which
@@ -408,10 +405,8 @@ even better.
 > >
 > >
 > >~~~
-> ># A tibble: 1 x 2
-> >  country      mean_lifeExp
-> >  <fct>               <dbl>
-> >1 Sierra Leone         36.8
+> >  mean_lifeExp
+> >1     59.47444
 > >~~~
 > >{: .output}
 > >
@@ -427,10 +422,8 @@ even better.
 > >
 > >
 > >~~~
-> ># A tibble: 1 x 2
-> >  country mean_lifeExp
-> >  <fct>          <dbl>
-> >1 Iceland         76.5
+> >  mean_lifeExp
+> >1     59.47444
 > >~~~
 > >{: .output}
 > {: .solution}
@@ -481,16 +474,9 @@ gapminder %>%
 
 
 ~~~
-# A tibble: 5 x 2
-  continent     n
-  <fct>     <int>
-1 Africa       52
-2 Asia         33
-3 Europe       30
-4 Americas     25
-5 Oceania       2
+Error in count(., continent, sort = TRUE): unused argument (sort = TRUE)
 ~~~
-{: .output}
+{: .error}
 
 If we need to use the number of observations in calculations, the `n()` function
 is useful. For instance, if we wanted to get the standard error of the life
@@ -507,16 +493,9 @@ gapminder %>%
 
 
 ~~~
-# A tibble: 5 x 2
-  continent se_pop
-  <fct>      <dbl>
-1 Africa     0.366
-2 Americas   0.540
-3 Asia       0.596
-4 Europe     0.286
-5 Oceania    0.775
+Error: This function should not be called directly
 ~~~
-{: .output}
+{: .error}
 
 You can also chain together several summary operations; in this case calculating the `minimum`, `maximum`, `mean` and `se` of each continent's per-country life-expectancy:
 
@@ -535,16 +514,9 @@ gapminder %>%
 
 
 ~~~
-# A tibble: 5 x 5
-  continent mean_le min_le max_le se_le
-  <fct>       <dbl>  <dbl>  <dbl> <dbl>
-1 Africa       48.9   23.6   76.4 0.366
-2 Americas     64.7   37.6   80.7 0.540
-3 Asia         60.1   28.8   82.6 0.596
-4 Europe       71.9   43.6   81.8 0.286
-5 Oceania      74.3   69.1   81.2 0.775
+Error: This function should not be called directly
 ~~~
-{: .output}
+{: .error}
 
 ## Using mutate()
 
@@ -613,12 +585,7 @@ ggplot(data = az.countries, aes(x = year, y = lifeExp, color = continent)) +
 ~~~
 {: .language-r}
 
-
-
-~~~
-Error in ggplot(data = az.countries, aes(x = year, y = lifeExp, color = continent)): could not find function "ggplot"
-~~~
-{: .error}
+<img src="../fig/rmd-13-unnamed-chunk-24-1.png" title="plot of chunk unnamed-chunk-24" alt="plot of chunk unnamed-chunk-24" style="display: block; margin: auto;" />
 
 This code makes the right plot but it also creates some variables (`starts.with`
 and `az.countries`) that we might not have any other uses for. Just as we used
@@ -642,12 +609,7 @@ gapminder %>%
 ~~~
 {: .language-r}
 
-
-
-~~~
-Error in ggplot(., aes(x = year, y = lifeExp, color = continent)): could not find function "ggplot"
-~~~
-{: .error}
+<img src="../fig/rmd-13-unnamed-chunk-25-1.png" title="plot of chunk unnamed-chunk-25" alt="plot of chunk unnamed-chunk-25" style="display: block; margin: auto;" />
 
 Using `dplyr` functions also helps us simplify things, for example we could
 combine the first two steps:
@@ -664,12 +626,7 @@ gapminder %>%
 ~~~
 {: .language-r}
 
-
-
-~~~
-Error in ggplot(., aes(x = year, y = lifeExp, color = continent)): could not find function "ggplot"
-~~~
-{: .error}
+<img src="../fig/rmd-13-unnamed-chunk-26-1.png" title="plot of chunk unnamed-chunk-26" alt="plot of chunk unnamed-chunk-26" style="display: block; margin: auto;" />
 
 > ## Advanced Challenge
 >

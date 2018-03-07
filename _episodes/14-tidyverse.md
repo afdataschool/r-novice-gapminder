@@ -3,7 +3,7 @@ title: Intro to the tidyverse
 teaching: 40
 exercises: 15
 questions:
-- "How can I use a consistent underlying data structur?"
+- "How can I use a consistent underlying data structure?"
 objectives:
 - "To recognise tidy vs messy data"
 - "To know where to find more information about the tidyverse"
