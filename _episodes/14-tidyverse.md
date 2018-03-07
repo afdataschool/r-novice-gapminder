@@ -120,6 +120,74 @@ In the above the same variable (a measurement value) was stored in two different
 
 As well as consistency of the underlying data structure, packages in the tidyverse are also all compatible with the `%>%` operator.
 
+There is a tidyverse package, which doesn't have any functionality, except to import core packages of the tidyverse. 
+
+~~~
+library(tidyverse)
+~~~
+{: .language-r}
+
+
+
+~~~
+Warning: replacing previous import by 'tidyr::%>%' when loading 'broom'
+~~~
+{: .error}
+
+
+
+~~~
+Warning: replacing previous import by 'tidyr::gather' when loading 'broom'
+~~~
+{: .error}
+
+
+
+~~~
+Warning: replacing previous import by 'tidyr::spread' when loading 'broom'
+~~~
+{: .error}
+
+
+
+~~~
+── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──
+~~~
+{: .output}
+
+
+
+~~~
+✔ tibble  1.4.2     ✔ purrr   0.2.4
+✔ readr   1.1.1     ✔ forcats 0.3.0
+~~~
+{: .output}
+
+
+
+~~~
+── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+~~~
+{: .output}
+
+is the equivalent of 
+
+
+~~~
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(readr)
+library(purrr)
+library(tibble)
+library(stringr)
+library(forcats)
+~~~
+{: .language-r}
+
+
 ## Other great resources
 
 * [The original tidy data paper](https://www.jstatsoft.org/article/view/v059i10/v59i10.pdf)

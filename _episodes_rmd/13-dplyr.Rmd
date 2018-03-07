@@ -8,12 +8,14 @@ objectives:
 - " To be able to use the six main dataframe manipulation 'verbs' with pipes in  `dplyr`."
 - " To understand how `group_by()` and `summarise()` can be combined to summarise datasets."
 - " Be able to analyze a subset of data using logical filtering."
+- " Be able to join different dataframes based on common variables"
 keypoints:
 - "Use the `dplyr` package to manipulate dataframes."
 - "Use `select()` to choose variables from a dataframe."
 - "Use `filter()` to choose data based on values."
 - "Use `group_by()` and `summarise()` to work with subsets of data."
 - "Use `mutate()` to create new variables."
+- "Join dataframes with `left_join()`, `full_join()`, inner_join()` or find non-matching rows with `anti_join()`"
 source: Rmd
 ---
 
@@ -66,10 +68,32 @@ Now let's load the package:
 
 ```{r,message=FALSE}
 library("dplyr")
-gapminder <- as_tibble(gapminder)
 ```
 
-## Using select()
+### A brief detour to talk tibbles
+
+As we saw previously, dataframes are the engine of R's power. The `dplyr` package introduces a new and improved version of the dataframe - the tibble. In effect, dataframes and tibbles are interchangeable - tibbles keep everything that works about dataframes, and adds a few nifty features.
+
+You can convert a dataframe to a tibble by using `as_tibble()`.
+```{r}
+gapminder <- as_tibble(gapminder)
+gapminder
+```
+
+You can see that when we print gapminder now, instead of getting an unwieldy amount of output, we get a manageable preview, as well as some really useful information.
+
+> ## Discussion 1
+>
+> What additional information does the `tibble` give us?
+> What functions would we need to use to get the same information from a traditional dataframe?
+>
+> > ## Discussion 1
+> >
+> > The tibble lets us see what the dimensions are (rows and columns). It also shows what the type of each column is. If there were more columns, it would helpfully trim each column so that more fit in the view as well.
+> {: .solution}
+{: .discussion}
+
+## Using `select()`
 
 If, for example, we wanted to move forward with only a few of the variables in
 our dataframe we could use the `select()` function. This will keep only the
@@ -82,7 +106,11 @@ year_country_gdp <- select(gapminder,year,country,gdpPercap)
 ![](../fig/13-dplyr-fig1.png)
 
 If we open up `year_country_gdp` we'll see that it only contains the year,
-country and gdpPercap. Above we used 'normal' grammar, but the strengths of
+country and gdpPercap. 
+
+### Pipes in R
+
+Above we used 'normal' grammar, but the strengths of
 `dplyr` lie in combining several functions using pipes. 
 
 `dplyr` is arranged around verbs (select, filter, mutate, summarise), and pipes let us build up 'paragraphs'.
@@ -97,11 +125,47 @@ To help you understand why we wrote that in that way, let's walk through it step
 by step. First we summon the gapminder dataframe and pass it on, using the pipe
 symbol `%>%`, to the next step, which is the `select()` function. In this case
 we don't specify which data object we use in the `select()` function since in
-gets that from the previous pipe. **Fun Fact**: There is a good chance you have
-encountered pipes before in the shell. In R, a pipe symbol is `%>%` while in the
-shell it is `|` but the concept is the same!
+gets that from the previous pipe. 
 
-## Using filter()
+**Fun Fact**: The pipe in this context is very similar to what we saw in the shell. In R, a pipe symbol is `%>%` while in the shell it is `|` but the concept is the same! In R, we can't use `|` because it already has meaning (the logical "or").
+
+### More powerful selections
+
+We can do more than just select by typing names. You can use column indices:
+
+```{r}
+gapminder %>% 
+  select(1:3)
+```
+
+Additionally, you can select based on the names of columns. `starts_with()`, `ends_with()` and `contains()` do exactly what they sound like. 
+
+> ## Challenge 1
+>
+> Select all columns from `gapminder` that start with "co"
+>
+> > ## Solution to Challenge 1
+> >```{r}
+> >gapminder %>%
+> >  select(starts_with("co"))
+> > ```
+> {: .solution}
+{: .challenge}
+
+> ## Challenge 2
+>
+> Select all columns from `gapminder` that contain the letter "p"
+>
+> > ## Solution to Challenge 2
+> >```{r}
+> >gapminder %>%
+> >  select(contains("p"))
+> > ```
+> {: .solution}
+{: .challenge}
+
+
+## Using `filter()`
 
 If we now wanted to move forward with the above, but only with European
 countries, we can combine `select` and `filter`
@@ -112,14 +176,14 @@ year_country_gdp_euro <- gapminder %>%
     select(year,country,gdpPercap)
 ```
 
-> ## Challenge 1
+> ## Challenge 3
 >
 > Write a single command (which can span multiple lines and includes pipes) that
 > will produce a dataframe that has the African values for `lifeExp`, `country`
 > and `year`, but not for other Continents.  How many rows does your dataframe
 > have and why?
 >
-> > ## Solution to Challenge 1
+> > ## Solution to Challenge 3
 > >```{r}
 > >year_country_lifeExp_Africa <- gapminder %>%
 > >                            filter(continent=="Africa") %>%
@@ -134,11 +198,11 @@ function, then we pass the filtered version of the gapminder dataframe to the
 case. If we used 'select' first, filter would not be able to find the variable
 continent since we would have removed it in the previous step.
 
-> ## Challenge 2
+> ## Challenge 4
 >
 > Write a single command that will produce a dataframe that only has years
 > after 1975, and records where life expectancy is less than 50.
-> > ## Solution to Challenge 2
+> > ## Solution to Challenge 4
 > >```{r}
 > >lifeExp_50_after_1975 <- gapminder %>% 
 > >                           filter(year > 1975, lifeExp < 50)
@@ -146,14 +210,14 @@ continent since we would have removed it in the previous step.
 > {: .solution}
 {: .challenge}
 
-## Using arrange()
+## Using `arrange()`
 
 The `arrange()` verb does exactly what it says - arrange rows according to the values in variables. To define which variables are to be used, they are supplied to arrange in order or priority. By default, the values are arranged in ascending order. To arrange by descending order, wrap a variable name in `desc()`.
 
-> ## Challenge 3
+> ## Challenge 5
 >
 > Find the record with the lowest population
-> > ## Solution to Challenge 3
+> > ## Solution to Challenge 5
 > >```{r}
 > >gapminder %>% 
 > >   arrange(pop)
@@ -161,11 +225,11 @@ The `arrange()` verb does exactly what it says - arrange rows according to the v
 > {: .solution}
 {: .challenge}
 
-> ## Challenge 4
+> ## Challenge 6
 > 
 > Find the country with the lowest population after 1982 that also had a 
 > life expectancy greater than 70
-> > ## Solution to Challenge 4
+> > ## Solution to Challenge 6
 > >```{r}
 > >gapminder %>% 
 > >   filter(year == 1982, lifeExp > 70) %>% 
@@ -174,7 +238,7 @@ The `arrange()` verb does exactly what it says - arrange rows according to the v
 > {: .solution}
 {: .challenge}
 
-## Using group_by() and summarise()
+## Using `group_by()` and `summarise()`
 
 Now, we were supposed to be reducing the error prone repetitiveness of what can
 be done with base R, but up to now we haven't done that since we would have to
@@ -196,7 +260,7 @@ value `continent` (at least in the example above).
 
 ![](../fig/13-dplyr-fig2.png)
 
-## Using summarise()
+## Using `summarise()`
 
 The above was a bit on the uneventful side but `group_by()` is much more
 exciting in conjunction with `summarise()`. This will allow us to create new
@@ -226,32 +290,21 @@ continent mean_gdpPercap
 That allowed us to calculate the mean gdpPercap for each continent, but it gets
 even better.
 
-> ## Challenge 2
+> ## Challenge 7
 >
 >
 > Calculate the average life expectancy per country. Which has the longest average life
 > expectancy and which has the shortest average life expectancy?
 >
-> > ## Solution to Challenge 2
+> > ## Solution to Challenge 7
 > >```{r}
 > >lifeExp_bycountry <- gapminder %>%
 > >    group_by(country) %>%
 > >    summarise(mean_lifeExp=mean(lifeExp))
 > >lifeExp_bycountry %>%
-> >    filter(mean_lifeExp == min(mean_lifeExp) | mean_lifeExp == max(mean_lifeExp))
-> >```
-> Another way to do this is to use the `dplyr` function `arrange()`, which
-> arranges the rows in a data frame according to the order of one or more
-> variables from the data frame.  It has similar syntax to other functions from
-> the `dplyr` package. You can use `desc()` inside `arrange()` to sort in
-> descending order.
-> >```{r}
+> >    arrange(mean_lifeExp)
 > >lifeExp_bycountry %>%
-> >    arrange(mean_lifeExp) %>%
-> >    head(1)
-> >lifeExp_bycountry %>%
-> >    arrange(desc(mean_lifeExp)) %>%
-> >    head(1)
+> >    arrange(desc(mean_lifeExp))
 > >```
 > {: .solution}
 {: .challenge}
@@ -314,20 +367,20 @@ gapminder %>%
       se_le = sd(lifeExp)/sqrt(n()))
 ```
 
-## Using mutate()
+## Using `mutate()`
 
 We can also create new variables prior to (or even after) summarizing information using `mutate()`.
 
 ```{r}
 gdp_pop_bycontinents_byyear <- gapminder %>%
-    mutate(gdp_billion=gdpPercap*pop/10^9) %>%
-    group_by(continent,year) %>%
-    summarise(mean_gdpPercap=mean(gdpPercap),
-              sd_gdpPercap=sd(gdpPercap),
-              mean_pop=mean(pop),
-              sd_pop=sd(pop),
-              mean_gdp_billion=mean(gdp_billion),
-              sd_gdp_billion=sd(gdp_billion))
+    mutate(gdp_billion = gdpPercap*pop/10^9) %>%
+    group_by(continent, year) %>%
+    summarise(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop),
+              mean_gdp_billion = mean(gdp_billion),
+              sd_gdp_billion = sd(gdp_billion))
 ```
 
 ## Connect mutate with logical filtering: ifelse
@@ -359,54 +412,52 @@ gdp_future_bycontinents_byyear_high_lifeExp <- gapminder %>%
               mean_gdpPercap_expected = mean(gdp_futureExpectation))
 ```
 
-## Combining `dplyr` and `ggplot2`
+## Joining dataframes
 
-In the plotting lesson we looked at how to make a multi-panel figure by adding
-a layer of facet panels using `ggplot2`. Here is the code we used (with some
-extra comments):
+It is extremely common that we have relevant data in more than one dataset. The dplyr package offers some very useful join functions to combine dataframes by common variables.
 
-```{r}
-# Get the start letter of each country
-starts.with <- substr(gapminder$country, start = 1, stop = 1)
-# Filter countries that start with "A" or "Z"
-az.countries <- gapminder[starts.with %in% c("A", "Z"), ]
-# Make the plot
-ggplot(data = az.countries, aes(x = year, y = lifeExp, color = continent)) +
-  geom_line() + facet_wrap( ~ country)
-```
+These functions take two dataframes and combine them based on matching values in common variables. 
 
-This code makes the right plot but it also creates some variables (`starts.with`
-and `az.countries`) that we might not have any other uses for. Just as we used
-`%>%` to pipe data along a chain of `dplyr` functions we can use it to pass data
-to `ggplot()`. Because `%>%` replaces the first argument in a function we don't
-need to specify the `data =` argument in the `ggplot()` function. By combining
-`dplyr` and `ggplot2` functions we can make the same figure without creating any
-new variables or modifying the data.
+`left_join()` keeps rows from the first dataframe, and adds matching values from the right dataframe.
+`right_join()` does the reverse.
+`inner_join()` only keeps rows that match between the two dataframes.
+`full_join()` keeps all rows from both dataframes.
+`anti_join()` only keeps rows from the first dataframe that *don't* match the second.
+
+In the `/data` directory, we have a second set of data about countries' populations, `gapminder_sex_ratios.csv`. Let's read that in and join it to our existing data.
 
 ```{r}
-gapminder %>%
-   # Get the start letter of each country
-   mutate(startsWith = substr(country, start = 1, stop = 1)) %>%
-   # Filter countries that start with "A" or "Z"
-   filter(startsWith %in% c("A", "Z")) %>%
-   # Make the plot
-   ggplot(aes(x = year, y = lifeExp, color = continent)) +
-   geom_line() +
-   facet_wrap( ~ country)
+gapminder_sr <- read_csv("data/gapminder_sex_ratios.csv")
+gapminder_sr
+
+gapminder_left_join <- left_join(gapminder, gapminder_sr)
+gapminder_left_join
 ```
 
-Using `dplyr` functions also helps us simplify things, for example we could
-combine the first two steps:
+> ## Challenge 8
+> 
+> Are there any records in the gapminder dataset that don't have corresponding records
+in the gapminder_sr set? 
+> 
+> How would you find them?
+>
+> > ## Solution to Challenge 8
+> > There are lots of possible ways to find non-matches, but `anti_join()` is very efficient:
+> >```{r}
+> >anti_join(gapminder_sr, gapminder)
+> {: .solution}
+{: .challenge}
 
-```{r}
-gapminder %>%
-    # Filter countries that start with "A" or "Z"
-	filter(substr(country, start = 1, stop = 1) %in% c("A", "Z")) %>%
-	# Make the plot
-	ggplot(aes(x = year, y = lifeExp, color = continent)) +
-	geom_line() +
-	facet_wrap( ~ country)
-```
+> ## Challenge 9
+> 
+> Compare the output of `left`, `full` and `inner` joins for these two datasets.
+> What are the differences? What are they due to?
+> 
+> > ## Solution to Challenge 9
+> > The output from `outer_join` has the most rows, because it is keeping all the rows from both dataframes. `inner_join` is only including those rows that match.
+> {: .solution}
+{: .challenge}
+
 
 > ## Advanced Challenge
 >

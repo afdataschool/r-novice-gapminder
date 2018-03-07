@@ -436,12 +436,6 @@ code to modify!
 >
 > > ## Solution to challenge 5
 > >
-> > Create a density plot of GDP per capita, filled by continent.
-> >
-> > Advanced:
-> >  - Transform the x axis to better visualise the data spread.
-> >  - Add a facet layer to panel the density plots by year.
-> >
 > > 
 > > ~~~
 > > ggplot(data = gapminder, aes(x = gdpPercap, fill=continent)) +
@@ -449,6 +443,6 @@ code to modify!
 > > ~~~
 > > {: .language-r}
 > > 
-> > <img src="../fig/rmd-08-ch5-sol-1.png" title="plot of chunk ch5-sol" alt="plot of chunk ch5-sol" style="display: block; margin: auto;" />
+> > <img src="../fig/rmd-08-ch5-sol-adv-1.png" title="plot of chunk ch5-sol-adv" alt="plot of chunk ch5-sol-adv" style="display: block; margin: auto;" />
 > {: .solution}
 {: .challenge}

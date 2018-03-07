@@ -67,7 +67,7 @@ control and project management.
 
 When you first open RStudio, you will be greeted by three panels:
 
-  * The interactive R console (entire left)
+  * The interactive R console/terminal (entire left)
   * Environment/History (tabbed in upper right)
   * Files/Plots/Packages/Help/Viewer (tabbed in lower right)
 
@@ -78,6 +78,7 @@ in the top left.
 
 ![RStudio layout with .R file open](../fig/01-rstudio-script.png)
 
+You can move the panels around in RStudio so that their arrangement suits you.
 
 ## Work flow within RStudio
 There are two main ways one can work within RStudio.
@@ -111,11 +112,12 @@ interactive R console.
 
 ## Introduction to R
 
-Much of your time in R will be spent in the R interactive
-console. This is where you will run all of your code, and can be a
-useful environment to try out ideas before adding them to an R script
+Your time in R will be split between the R interactive
+console working in scripts. The console is where you will run all of your code, and can be a useful environment to try out ideas before adding them to an R script
 file. This console in RStudio is the same as the one you would get if
 you typed in `R` in your command-line environment.
+
+*Anything that you want to keep needs to go in a script.*
 
 The first thing you will see in the R interactive session is a bunch
 of information, followed by a ">" and a blinking cursor. In many ways
@@ -704,8 +706,7 @@ function (name, pos = -1L, envir = as.environment(pos), all.names = FALSE,
     }
     else all.names
 }
-<<<<<<< HEAD
-<bytecode: 0x0000000008ff1b70>
+<bytecode: 0x2057068>
 <environment: namespace:base>
 ~~~
 {: .output}
@@ -868,7 +869,7 @@ network). R and RStudio have functionality for managing packages:
 
 > ## Challenge 5
 >
-> Install the following packages: `ggplot2`, `plyr`, `gapminder`
+> Install the following packages: `ggplot2`, `gapminder`
 >
 > > ## Solution to challenge 5
 > >
@@ -876,7 +877,6 @@ network). R and RStudio have functionality for managing packages:
 > > 
 > > ~~~
 > > install.packages("ggplot2")
-> > install.packages("plyr")
 > > install.packages("gapminder")
 > > ~~~
 > > {: .language-r}

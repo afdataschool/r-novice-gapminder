@@ -8,12 +8,14 @@ objectives:
 - " To be able to use the six main dataframe manipulation 'verbs' with pipes in  `dplyr`."
 - " To understand how `group_by()` and `summarise()` can be combined to summarise datasets."
 - " Be able to analyze a subset of data using logical filtering."
+- " Be able to join different dataframes based on common variables"
 keypoints:
 - "Use the `dplyr` package to manipulate dataframes."
 - "Use `select()` to choose variables from a dataframe."
 - "Use `filter()` to choose data based on values."
 - "Use `group_by()` and `summarise()` to work with subsets of data."
 - "Use `mutate()` to create new variables."
+- "Join dataframes with `left_join()`, `full_join()`, inner_join()` or find non-matching rows with `anti_join()`"
 source: Rmd
 ---
 
@@ -99,11 +101,55 @@ Now let's load the package:
 
 ~~~
 library("dplyr")
-gapminder <- as_tibble(gapminder)
 ~~~
 {: .language-r}
 
-## Using select()
+### A brief detour to talk tibbles
+
+As we saw previously, dataframes are the engine of R's power. The `dplyr` package introduces a new and improved version of the dataframe - the tibble. In effect, dataframes and tibbles are interchangeable - tibbles keep everything that works about dataframes, and adds a few nifty features.
+
+You can convert a dataframe to a tibble by using `as_tibble()`.
+
+~~~
+gapminder <- as_tibble(gapminder)
+gapminder
+~~~
+{: .language-r}
+
+
+
+~~~
+# A tibble: 1,704 x 6
+   country      year       pop continent lifeExp gdpPercap
+   <fct>       <int>     <dbl> <fct>       <dbl>     <dbl>
+ 1 Afghanistan  1952  8425333. Asia         28.8      779.
+ 2 Afghanistan  1957  9240934. Asia         30.3      821.
+ 3 Afghanistan  1962 10267083. Asia         32.0      853.
+ 4 Afghanistan  1967 11537966. Asia         34.0      836.
+ 5 Afghanistan  1972 13079460. Asia         36.1      740.
+ 6 Afghanistan  1977 14880372. Asia         38.4      786.
+ 7 Afghanistan  1982 12881816. Asia         39.9      978.
+ 8 Afghanistan  1987 13867957. Asia         40.8      852.
+ 9 Afghanistan  1992 16317921. Asia         41.7      649.
+10 Afghanistan  1997 22227415. Asia         41.8      635.
+# ... with 1,694 more rows
+~~~
+{: .output}
+
+You can see that when we print gapminder now, instead of getting an unwieldy amount of output, we get a manageable preview, as well as some really useful information.
+
+> ## Discussion 1
+>
+> What additional information does the `tibble` give us?
+> What functions would we need to use to get the same information from a traditional dataframe?
+>
+> > ## Discussion 1
+> >
+> > The tibble lets us see what the dimensions are (rows and columns). It also shows what the type of each column is. If there were more columns, it would helpfully trim each column so that more fit in the view as well.
+> {: .solution}
+{: .discussion}
+
+## Using `select()`
 
 If, for example, we wanted to move forward with only a few of the variables in
 our dataframe we could use the `select()` function. This will keep only the
@@ -118,7 +164,11 @@ year_country_gdp <- select(gapminder,year,country,gdpPercap)
 ![](../fig/13-dplyr-fig1.png)
 
 If we open up `year_country_gdp` we'll see that it only contains the year,
-country and gdpPercap. Above we used 'normal' grammar, but the strengths of
+country and gdpPercap. 
+
+### Pipes in R
+
+Above we used 'normal' grammar, but the strengths of
 `dplyr` lie in combining several functions using pipes. 
 
 `dplyr` is arranged around verbs (select, filter, mutate, summarise), and pipes let us build up 'paragraphs'.
@@ -135,11 +185,113 @@ To help you understand why we wrote that in that way, let's walk through it step
 by step. First we summon the gapminder dataframe and pass it on, using the pipe
 symbol `%>%`, to the next step, which is the `select()` function. In this case
 we don't specify which data object we use in the `select()` function since in
-gets that from the previous pipe. **Fun Fact**: There is a good chance you have
-encountered pipes before in the shell. In R, a pipe symbol is `%>%` while in the
-shell it is `|` but the concept is the same!
+gets that from the previous pipe. 
 
-## Using filter()
+**Fun Fact**: The pipe in this context is very similar to what we saw in the shell. In R, a pipe symbol is `%>%` while in the shell it is `|` but the concept is the same! In R, we can't use `|` because it already has meaning (the logical "or").
+
+### More powerful selections
+
+We can do more than just select by typing names. You can use column indices:
+
+
+~~~
+gapminder %>% 
+  select(1:3)
+~~~
+{: .language-r}
+
+
+
+~~~
+# A tibble: 1,704 x 3
+   country      year       pop
+   <fct>       <int>     <dbl>
+ 1 Afghanistan  1952  8425333.
+ 2 Afghanistan  1957  9240934.
+ 3 Afghanistan  1962 10267083.
+ 4 Afghanistan  1967 11537966.
+ 5 Afghanistan  1972 13079460.
+ 6 Afghanistan  1977 14880372.
+ 7 Afghanistan  1982 12881816.
+ 8 Afghanistan  1987 13867957.
+ 9 Afghanistan  1992 16317921.
+10 Afghanistan  1997 22227415.
+# ... with 1,694 more rows
+~~~
+{: .output}
+
+Additionally, you can select based on the names of columns. `starts_with()`, `ends_with()` and `contains()` do exactly what they sound like. 
+
+> ## Challenge 1
+>
+> Select all columns from `gapminder` that start with "co"
+>
+> > ## Solution to Challenge 1
+> >
+> >~~~
+> >gapminder %>%
+> >  select(starts_with("co"))
+> >~~~
+> >{: .language-r}
+> >
+> >
+> >
+> >~~~
+> ># A tibble: 1,704 x 2
+> >   country     continent
+> >   <fct>       <fct>    
+> > 1 Afghanistan Asia     
+> > 2 Afghanistan Asia     
+> > 3 Afghanistan Asia     
+> > 4 Afghanistan Asia     
+> > 5 Afghanistan Asia     
+> > 6 Afghanistan Asia     
+> > 7 Afghanistan Asia     
+> > 8 Afghanistan Asia     
+> > 9 Afghanistan Asia     
+> >10 Afghanistan Asia     
+> ># ... with 1,694 more rows
+> >~~~
+> >{: .output}
+> {: .solution}
+{: .challenge}
+
+> ## Challenge 2
+>
+> Select all columns from `gapminder` that contain the letter "p"
+>
+> > ## Solution to Challenge 2
+> >
+> >~~~
+> >gapminder %>%
+> >  select(contains("p"))
+> >~~~
+> >{: .language-r}
+> >
+> >
+> >
+> >~~~
+> ># A tibble: 1,704 x 3
+> >         pop lifeExp gdpPercap
+> >       <dbl>   <dbl>     <dbl>
+> > 1  8425333.    28.8      779.
+> > 2  9240934.    30.3      821.
+> > 3 10267083.    32.0      853.
+> > 4 11537966.    34.0      836.
+> > 5 13079460.    36.1      740.
+> > 6 14880372.    38.4      786.
+> > 7 12881816.    39.9      978.
+> > 8 13867957.    40.8      852.
+> > 9 16317921.    41.7      649.
+> >10 22227415.    41.8      635.
+> ># ... with 1,694 more rows
+> >~~~
+> >{: .output}
+> {: .solution}
+{: .challenge}
+
+
+## Using `filter()`
 
 If we now wanted to move forward with the above, but only with European
 countries, we can combine `select` and `filter`
@@ -152,14 +304,14 @@ year_country_gdp_euro <- gapminder %>%
 ~~~
 {: .language-r}
 
-> ## Challenge 1
+> ## Challenge 3
 >
 > Write a single command (which can span multiple lines and includes pipes) that
 > will produce a dataframe that has the African values for `lifeExp`, `country`
 > and `year`, but not for other Continents.  How many rows does your dataframe
 > have and why?
 >
-> > ## Solution to Challenge 1
+> > ## Solution to Challenge 3
 > >
 > >~~~
 > >year_country_lifeExp_Africa <- gapminder %>%
@@ -176,11 +328,11 @@ function, then we pass the filtered version of the gapminder dataframe to the
 case. If we used 'select' first, filter would not be able to find the variable
 continent since we would have removed it in the previous step.
 
-> ## Challenge 2
+> ## Challenge 4
 >
 > Write a single command that will produce a dataframe that only has years
 > after 1975, and records where life expectancy is less than 50.
-> > ## Solution to Challenge 2
+> > ## Solution to Challenge 4
 > >
 > >~~~
 > >lifeExp_50_after_1975 <- gapminder %>% 
@@ -190,14 +342,14 @@ continent since we would have removed it in the previous step.
 > {: .solution}
 {: .challenge}
 
-## Using arrange()
+## Using `arrange()`
 
 The `arrange()` verb does exactly what it says - arrange rows according to the values in variables. To define which variables are to be used, they are supplied to arrange in order or priority. By default, the values are arranged in ascending order. To arrange by descending order, wrap a variable name in `desc()`.
 
-> ## Challenge 3
+> ## Challenge 5
 >
 > Find the record with the lowest population
-> > ## Solution to Challenge 3
+> > ## Solution to Challenge 5
 > >
 > >~~~
 > >gapminder %>% 
@@ -209,29 +361,29 @@ The `arrange()` verb does exactly what it says - arrange rows according to the v
 > >
 > >~~~
 > ># A tibble: 1,704 x 6
-> >   country                year   pop continent lifeExp gdpPercap
-> >   <fct>                 <int> <dbl> <fct>       <dbl>     <dbl>
-> > 1 Sao Tome and Principe  1952 60011 Africa       46.5       880
-> > 2 Sao Tome and Principe  1957 61325 Africa       48.9       861
-> > 3 Djibouti               1952 63149 Africa       34.8      2670
-> > 4 Sao Tome and Principe  1962 65345 Africa       51.9      1072
-> > 5 Sao Tome and Principe  1967 70787 Africa       54.4      1385
-> > 6 Djibouti               1957 71851 Africa       37.3      2865
-> > 7 Sao Tome and Principe  1972 76595 Africa       56.5      1533
-> > 8 Sao Tome and Principe  1977 86796 Africa       58.6      1738
-> > 9 Djibouti               1962 89898 Africa       39.7      3021
-> >10 Sao Tome and Principe  1982 98593 Africa       60.4      1890
+> >   country                year    pop continent lifeExp gdpPercap
+> >   <fct>                 <int>  <dbl> <fct>       <dbl>     <dbl>
+> > 1 Sao Tome and Principe  1952 60011. Africa       46.5      880.
+> > 2 Sao Tome and Principe  1957 61325. Africa       48.9      861.
+> > 3 Djibouti               1952 63149. Africa       34.8     2670.
+> > 4 Sao Tome and Principe  1962 65345. Africa       51.9     1072.
+> > 5 Sao Tome and Principe  1967 70787. Africa       54.4     1385.
+> > 6 Djibouti               1957 71851. Africa       37.3     2865.
+> > 7 Sao Tome and Principe  1972 76595. Africa       56.5     1533.
+> > 8 Sao Tome and Principe  1977 86796. Africa       58.6     1738.
+> > 9 Djibouti               1962 89898. Africa       39.7     3021.
+> >10 Sao Tome and Principe  1982 98593. Africa       60.4     1890.
 > ># ... with 1,694 more rows
 > >~~~
 > >{: .output}
 > {: .solution}
 {: .challenge}
 
-> ## Challenge 4
+> ## Challenge 6
 > 
 > Find the country with the lowest population after 1982 that also had a 
 > life expectancy greater than 70
-> > ## Solution to Challenge 4
+> > ## Solution to Challenge 6
 > >
 > >~~~
 > >gapminder %>% 
@@ -244,25 +396,25 @@ The `arrange()` verb does exactly what it says - arrange rows according to the v
 > >
 > >~~~
 > ># A tibble: 44 x 6
-> >   country     year     pop continent lifeExp gdpPercap
-> >   <fct>      <int>   <dbl> <fct>       <dbl>     <dbl>
-> > 1 Iceland     1982  233997 Europe       77.0     23270
-> > 2 Montenegro  1982  562548 Europe       74.1     11223
-> > 3 Kuwait      1982 1497494 Asia         71.3     31354
-> > 4 Slovenia    1982 1861252 Europe       71.1     17867
-> > 5 Panama      1982 2036305 Americas     70.5      7010
-> > 6 Jamaica     1982 2298309 Americas     71.2      6068
-> > 7 Costa Rica  1982 2424367 Americas     73.4      5263
-> > 8 Singapore   1982 2651869 Asia         71.8     15169
-> > 9 Albania     1982 2780097 Europe       70.4      3631
-> >10 Uruguay     1982 2953997 Americas     70.8      6920
+> >   country     year      pop continent lifeExp gdpPercap
+> >   <fct>      <int>    <dbl> <fct>       <dbl>     <dbl>
+> > 1 Iceland     1982  233997. Europe       77.0    23270.
+> > 2 Montenegro  1982  562548. Europe       74.1    11223.
+> > 3 Kuwait      1982 1497494. Asia         71.3    31354.
+> > 4 Slovenia    1982 1861252. Europe       71.1    17867.
+> > 5 Panama      1982 2036305. Americas     70.5     7010.
+> > 6 Jamaica     1982 2298309. Americas     71.2     6068.
+> > 7 Costa Rica  1982 2424367. Americas     73.4     5263.
+> > 8 Singapore   1982 2651869. Asia         71.8    15169.
+> > 9 Albania     1982 2780097. Europe       70.4     3631.
+> >10 Uruguay     1982 2953997. Americas     70.8     6920.
 > ># ... with 34 more rows
 > >~~~
 > >{: .output}
 > {: .solution}
 {: .challenge}
 
-## Using group_by() and summarise()
+## Using `group_by()` and `summarise()`
 
 Now, we were supposed to be reducing the error prone repetitiveness of what can
 be done with base R, but up to now we haven't done that since we would have to
@@ -331,7 +483,7 @@ value `continent` (at least in the example above).
 
 ![](../fig/13-dplyr-fig2.png)
 
-## Using summarise()
+## Using `summarise()`
 
 The above was a bit on the uneventful side but `group_by()` is much more
 exciting in conjunction with `summarise()`. This will allow us to create new
@@ -365,48 +517,40 @@ continent mean_gdpPercap
 That allowed us to calculate the mean gdpPercap for each continent, but it gets
 even better.
 
-> ## Challenge 2
+> ## Challenge 7
 >
 >
 > Calculate the average life expectancy per country. Which has the longest average life
 > expectancy and which has the shortest average life expectancy?
 >
-> > ## Solution to Challenge 2
+> > ## Solution to Challenge 7
 > >
 > >~~~
 > >lifeExp_bycountry <- gapminder %>%
 > >    group_by(country) %>%
 > >    summarise(mean_lifeExp=mean(lifeExp))
 > >lifeExp_bycountry %>%
-> >    filter(mean_lifeExp == min(mean_lifeExp) | mean_lifeExp == max(mean_lifeExp))
+> >    arrange(mean_lifeExp)
 > >~~~
 > >{: .language-r}
 > >
 > >
 > >
 > >~~~
-> >  mean_lifeExp
-> >1     59.47444
-> >~~~
-> >{: .output}
-> Another way to do this is to use the `dplyr` function `arrange()`, which
-> arranges the rows in a data frame according to the order of one or more
-> variables from the data frame.  It has similar syntax to other functions from
-> the `dplyr` package. You can use `desc()` inside `arrange()` to sort in
-> descending order.
-> >
-> >~~~
-> >lifeExp_bycountry %>%
-> >    arrange(mean_lifeExp) %>%
-> >    head(1)
-> >~~~
-> >{: .language-r}
-> >
-> >
-> >
-> >~~~
-> >  mean_lifeExp
-> >1     59.47444
+> ># A tibble: 142 x 2
+> >   country           mean_lifeExp
+> >   <fct>                    <dbl>
+> > 1 Sierra Leone              36.8
+> > 2 Afghanistan               37.5
+> > 3 Angola                    37.9
+> > 4 Guinea-Bissau             39.2
+> > 5 Mozambique                40.4
+> > 6 Somalia                   41.0
+> > 7 Rwanda                    41.5
+> > 8 Liberia                   42.5
+> > 9 Equatorial Guinea         43.0
+> >10 Guinea                    43.2
+> ># ... with 132 more rows
 > >~~~
 > >{: .output}
 > >
@@ -414,16 +558,27 @@ even better.
 > >
 > >~~~
 > >lifeExp_bycountry %>%
-> >    arrange(desc(mean_lifeExp)) %>%
-> >    head(1)
+> >    arrange(desc(mean_lifeExp))
 > >~~~
 > >{: .language-r}
 > >
 > >
 > >
 > >~~~
-> >  mean_lifeExp
-> >1     59.47444
+> ># A tibble: 142 x 2
+> >   country     mean_lifeExp
+> >   <fct>              <dbl>
+> > 1 Iceland             76.5
+> > 2 Sweden              76.2
+> > 3 Norway              75.8
+> > 4 Netherlands         75.6
+> > 5 Switzerland         75.6
+> > 6 Canada              74.9
+> > 7 Japan               74.8
+> > 8 Australia           74.7
+> > 9 Denmark             74.4
+> >10 France              74.3
+> ># ... with 132 more rows
 > >~~~
 > >{: .output}
 > {: .solution}
@@ -474,9 +629,16 @@ gapminder %>%
 
 
 ~~~
-Error in count(., continent, sort = TRUE): unused argument (sort = TRUE)
+# A tibble: 5 x 2
+  continent     n
+  <fct>     <int>
+1 Africa       52
+2 Asia         33
+3 Europe       30
+4 Americas     25
+5 Oceania       2
 ~~~
-{: .error}
+{: .output}
 
 If we need to use the number of observations in calculations, the `n()` function
 is useful. For instance, if we wanted to get the standard error of the life
@@ -493,9 +655,16 @@ gapminder %>%
 
 
 ~~~
-Error: This function should not be called directly
+# A tibble: 5 x 2
+  continent se_pop
+  <fct>      <dbl>
+1 Africa     0.366
+2 Americas   0.540
+3 Asia       0.596
+4 Europe     0.286
+5 Oceania    0.775
 ~~~
-{: .error}
+{: .output}
 
 You can also chain together several summary operations; in this case calculating the `minimum`, `maximum`, `mean` and `se` of each continent's per-country life-expectancy:
 
@@ -514,25 +683,32 @@ gapminder %>%
 
 
 ~~~
-Error: This function should not be called directly
+# A tibble: 5 x 5
+  continent mean_le min_le max_le se_le
+  <fct>       <dbl>  <dbl>  <dbl> <dbl>
+1 Africa       48.9   23.6   76.4 0.366
+2 Americas     64.7   37.6   80.7 0.540
+3 Asia         60.1   28.8   82.6 0.596
+4 Europe       71.9   43.6   81.8 0.286
+5 Oceania      74.3   69.1   81.2 0.775
 ~~~
-{: .error}
+{: .output}
 
-## Using mutate()
+## Using `mutate()`
 
 We can also create new variables prior to (or even after) summarizing information using `mutate()`.
 
 
 ~~~
 gdp_pop_bycontinents_byyear <- gapminder %>%
-    mutate(gdp_billion=gdpPercap*pop/10^9) %>%
-    group_by(continent,year) %>%
-    summarise(mean_gdpPercap=mean(gdpPercap),
-              sd_gdpPercap=sd(gdpPercap),
-              mean_pop=mean(pop),
-              sd_pop=sd(pop),
-              mean_gdp_billion=mean(gdp_billion),
-              sd_gdp_billion=sd(gdp_billion))
+    mutate(gdp_billion = gdpPercap*pop/10^9) %>%
+    group_by(continent, year) %>%
+    summarise(mean_gdpPercap = mean(gdpPercap),
+              sd_gdpPercap = sd(gdpPercap),
+              mean_pop = mean(pop),
+              sd_pop = sd(pop),
+              mean_gdp_billion = mean(gdp_billion),
+              sd_gdp_billion = sd(gdp_billion))
 ~~~
 {: .language-r}
 
@@ -567,75 +743,121 @@ gdp_future_bycontinents_byyear_high_lifeExp <- gapminder %>%
 ~~~
 {: .language-r}
 
-## Combining `dplyr` and `ggplot2`
+## Joining dataframes
 
-In the plotting lesson we looked at how to make a multi-panel figure by adding
-a layer of facet panels using `ggplot2`. Here is the code we used (with some
-extra comments):
+It is extremely common that we have relevant data in more than one dataset. The dplyr package offers some very useful join functions to combine dataframes by common variables.
 
+These functions take two dataframes and combine them based on matching values in common variables. 
 
-~~~
-# Get the start letter of each country
-starts.with <- substr(gapminder$country, start = 1, stop = 1)
-# Filter countries that start with "A" or "Z"
-az.countries <- gapminder[starts.with %in% c("A", "Z"), ]
-# Make the plot
-ggplot(data = az.countries, aes(x = year, y = lifeExp, color = continent)) +
-  geom_line() + facet_wrap( ~ country)
-~~~
-{: .language-r}
+`left_join()` keeps rows from the first dataframe, and adds matching values from the right dataframe.
+`right_join()` does the reverse.
+`inner_join()` only keeps rows that match between the two dataframes.
+`full_join()` keeps all rows from both dataframes.
+`anti_join()` only keeps rows from the first dataframe that *don't* match the second.
 
-<img src="../fig/rmd-13-unnamed-chunk-24-1.png" title="plot of chunk unnamed-chunk-24" alt="plot of chunk unnamed-chunk-24" style="display: block; margin: auto;" />
-
-This code makes the right plot but it also creates some variables (`starts.with`
-and `az.countries`) that we might not have any other uses for. Just as we used
-`%>%` to pipe data along a chain of `dplyr` functions we can use it to pass data
-to `ggplot()`. Because `%>%` replaces the first argument in a function we don't
-need to specify the `data =` argument in the `ggplot()` function. By combining
-`dplyr` and `ggplot2` functions we can make the same figure without creating any
-new variables or modifying the data.
+In the `/data` directory, we have a second set of data about countries' populations, `gapminder_sex_ratios.csv`. Let's read that in and join it to our existing data.
 
 
 ~~~
-gapminder %>%
-   # Get the start letter of each country
-   mutate(startsWith = substr(country, start = 1, stop = 1)) %>%
-   # Filter countries that start with "A" or "Z"
-   filter(startsWith %in% c("A", "Z")) %>%
-   # Make the plot
-   ggplot(aes(x = year, y = lifeExp, color = continent)) +
-   geom_line() +
-   facet_wrap( ~ country)
+gapminder_sr <- read_csv("data/gapminder_sex_ratios.csv")
 ~~~
 {: .language-r}
 
-<img src="../fig/rmd-13-unnamed-chunk-25-1.png" title="plot of chunk unnamed-chunk-25" alt="plot of chunk unnamed-chunk-25" style="display: block; margin: auto;" />
-
-Using `dplyr` functions also helps us simplify things, for example we could
-combine the first two steps:
 
 
 ~~~
-gapminder %>%
-    # Filter countries that start with "A" or "Z"
-	filter(substr(country, start = 1, stop = 1) %in% c("A", "Z")) %>%
-	# Make the plot
-	ggplot(aes(x = year, y = lifeExp, color = continent)) +
-	geom_line() +
-	facet_wrap( ~ country)
+Error in eval(expr, envir, enclos): could not find function "read_csv"
+~~~
+{: .error}
+
+
+
+~~~
+gapminder_sr
 ~~~
 {: .language-r}
 
-<img src="../fig/rmd-13-unnamed-chunk-26-1.png" title="plot of chunk unnamed-chunk-26" alt="plot of chunk unnamed-chunk-26" style="display: block; margin: auto;" />
 
-> ## Advanced Challenge
+
+~~~
+Error in eval(expr, envir, enclos): object 'gapminder_sr' not found
+~~~
+{: .error}
+
+
+
+~~~
+gapminder_left_join <- left_join(gapminder, gapminder_sr)
+~~~
+{: .language-r}
+
+
+
+~~~
+Error in tbl_vars(y): object 'gapminder_sr' not found
+~~~
+{: .error}
+
+
+
+~~~
+gapminder_left_join
+~~~
+{: .language-r}
+
+
+
+~~~
+Error in eval(expr, envir, enclos): object 'gapminder_left_join' not found
+~~~
+{: .error}
+
+> ## Challenge 8
+> 
+> Are there any records in the gapminder dataset that don't have corresponding records
+in the gapminder_sr set? 
+> 
+> How would you find them?
 >
-> Calculate the average life expectancy in 2002 of 2 randomly selected countries
-> for each continent. Then arrange the continent names in reverse order.
-> **Hint:** Use the `dplyr` functions `arrange()` and `sample_n()`, they have
-> similar syntax to other dplyr functions.
->
+> > ## Solution to Challenge 8
+> > There are lots of possible ways to find non-matches, but `anti_join()` is very efficient:
+> >
+> >~~~
+> >anti_join(gapminder_sr, gapminder)
+> >> {: .solution}
+> >{: .challenge}
+> >
+> >> ## Challenge 9
+> >> 
+> >> Compare the output of `left`, `full` and `inner` joins for these two datasets.
+> >> What are the differences? What are they due to?
+> >> 
+> > ## Solution to Challenge 9
+> > The output from `outer_join` has the most rows, because it is keeping all the rows from both dataframes. `inner_join` is only including those rows that match.
+> >> {: .solution}
+> >{: .challenge}
+> >
+> >
+> >> ## Advanced Challenge
+> >>
+> >> Calculate the average life expectancy in 2002 of 2 randomly selected countries
+> >> for each continent. Then arrange the continent names in reverse order.
+> >> **Hint:** Use the `dplyr` functions `arrange()` and `sample_n()`, they have
+> >> similar syntax to other dplyr functions.
+> >>
 > > ## Solution to Advanced Challenge
+> >~~~
+> >{: .language-r}
+> >
+> >
+> >
+> >~~~
+> >Error: <text>:2:1: unexpected '>'
+> >1: anti_join(gapminder_sr, gapminder)
+> >2: >
+> >   ^
+> >~~~
+> >{: .error}
 > >
 > >~~~
 > >lifeExp_2countries_bycontinents <- gapminder %>%
