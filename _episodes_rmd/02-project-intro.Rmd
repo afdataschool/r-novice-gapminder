@@ -188,15 +188,15 @@ Now we have a good directory structure we will now place/save the data file in t
 > > ## Solution to Challenge 2
 > >
 > > By running these commands in the shell:
-> > ```{r ch2a-sol, engine='sh'}
+> > ```{r ch2a-sol, engine='bash'}
 > > ls -lh data/gapminder-FiveYearData.csv
 > > ```
 > > The file size is 80K.
-> > ```{r ch2b-sol, engine='sh'}
+> > ```{r ch2b-sol, engine='bash'}
 > > wc -l data/gapminder-FiveYearData.csv
 > > ```
 > > There are 1705 lines. The data looks like:
-> > ```{r ch2c-sol, engine='sh'}
+> > ```{r ch2c-sol, engine='bash'}
 > > head data/gapminder-FiveYearData.csv
 > > ```
 > {: .solution}

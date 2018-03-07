@@ -116,25 +116,25 @@ sessionInfo()
 
 ~~~
 R version 3.4.3 (2017-11-30)
-Platform: x86_64-apple-darwin17.3.0 (64-bit)
-Running under: macOS High Sierra 10.13.3
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows >= 8 x64 (build 9200)
 
 Matrix products: default
-BLAS: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
-LAPACK: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib
 
 locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+[1] LC_COLLATE=English_Australia.1252  LC_CTYPE=English_Australia.1252   
+[3] LC_MONETARY=English_Australia.1252 LC_NUMERIC=C                      
+[5] LC_TIME=English_Australia.1252    
 
 attached base packages:
-[1] methods   stats     graphics  grDevices utils     datasets  base     
+[1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] checkpoint_0.4.3 stringr_1.2.0    knitr_1.18      
+[1] knitr_1.20
 
 loaded via a namespace (and not attached):
-[1] compiler_3.4.3  magrittr_1.5    tools_3.4.3     stringi_1.1.6  
-[5] evaluate_0.10.1
+[1] compiler_3.4.3  magrittr_1.5    tools_3.4.3     yaml_2.1.16    
+[5] stringi_1.1.6   stringr_1.3.0   evaluate_0.10.1
 ~~~
 {: .output}
 
