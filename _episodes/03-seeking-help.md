@@ -116,25 +116,40 @@ sessionInfo()
 
 ~~~
 R version 3.4.3 (2017-11-30)
-Platform: x86_64-apple-darwin17.3.0 (64-bit)
-Running under: macOS High Sierra 10.13.3
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows >= 8 x64 (build 9200)
 
 Matrix products: default
-BLAS: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib
-LAPACK: /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libLAPACK.dylib
 
 locale:
-[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+[1] LC_COLLATE=English_Australia.1252  LC_CTYPE=English_Australia.1252   
+[3] LC_MONETARY=English_Australia.1252 LC_NUMERIC=C                      
+[5] LC_TIME=English_Australia.1252    
 
 attached base packages:
-[1] methods   stats     graphics  grDevices utils     datasets  base     
+[1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] checkpoint_0.4.3 stringr_1.2.0    knitr_1.18      
+ [1] kableExtra_0.7.0   plyr_1.8.4         ggplot2_2.2.1.9000
+ [4] checkpoint_0.4.3   stringr_1.3.0      tidyr_0.8.0       
+ [7] bindrcpp_0.2       dplyr_0.7.4        gapminder_0.3.0   
+[10] knitr_1.20        
 
 loaded via a namespace (and not attached):
-[1] compiler_3.4.3  magrittr_1.5    tools_3.4.3     stringi_1.1.6  
-[5] evaluate_0.10.1
+ [1] Rcpp_0.12.15      pillar_1.1.0      compiler_3.4.3   
+ [4] highr_0.6         bindr_0.1         tools_3.4.3      
+ [7] digest_0.6.15     viridisLite_0.3.0 evaluate_0.10.1  
+[10] tibble_1.4.2      gtable_0.2.0      pkgconfig_2.0.1  
+[13] rlang_0.2.0.9000  cli_1.0.0         yaml_2.1.16      
+[16] xml2_1.2.0        httr_1.3.1        withr_2.1.1.9000 
+[19] hms_0.4.1         rprojroot_1.3-2   grid_3.4.3       
+[22] tidyselect_0.2.3  glue_1.2.0        R6_2.2.2         
+[25] rmarkdown_1.8     readr_1.1.1       purrr_0.2.4      
+[28] magrittr_1.5      backports_1.1.2   scales_0.5.0.9000
+[31] htmltools_0.3.6   rvest_0.3.2       assertthat_0.2.0 
+[34] colorspace_1.3-2  labeling_0.3      utf8_1.1.3       
+[37] stringi_1.1.6     lazyeval_0.2.1    munsell_0.4.3    
+[40] crayon_1.3.4     
 ~~~
 {: .output}
 
