@@ -16,6 +16,7 @@ source: Rmd
 
 ```{r, include=FALSE}
 library(tidyr)
+library(kableExtra)
 source("../bin/chunk-options.R")
 knitr_fig_path("13-")
 # Silently load in the data so the rest of the lesson works
@@ -34,7 +35,7 @@ The concept of tidy data can be distilled into three principles. A data set can 
 2. Each case is in its own row
 3. Each value is in its own cell
 
-```{r example-tidy}
+```{r example-tidy, echo=FALSE}
 set.seed(123)
 messy1 <- data.frame(id = 1:3,
                     rep1 = round(rnorm(3, 2), 2),
@@ -49,8 +50,8 @@ tidy1 <- messy1 %>%
 > ## Challenge 1
 >
 > In the following table, what makes it untidy?
->```{r echo = FALSE}
->messy1
+>```{r echo = FALSE, results='asis'}
+>kable_styling(kable(messy1, format="html"), full_width = FALSE, position = "left")
 >```
 {: .challenge}
 
@@ -58,8 +59,8 @@ tidy1 <- messy1 %>%
 >
 > What it would look like if it was tidy?
 > > ## Solution to Challenge 2
-> >```{r echo = FALSE}
-> >tidy1
+> >```{r echo = FALSE, results='asis'}
+> >kable_styling(kable(tidy1, format="html"), full_width = FALSE, position = "left")
 > >```
 > {: .solution}
 {: .challenge}
@@ -67,7 +68,7 @@ tidy1 <- messy1 %>%
 In the above the same variable (a measurement value) was stored in two different columns. In this case making the data tidy required converting those two columns into one, which made the dataset have twice as many rows. This is usually called going from "wide" to "long" format, which is often done in the simplest cases of tidying data.
 
 
-> ## Challenge 2
+> ## Challenge 3
 >
 > Open the file `examples/plates.xlsx`. This is a very common format to store data
 > from 96-well plates. What would this look like if it was tidy? Discuss the steps you would need to go through to convert it to a tidy format.
