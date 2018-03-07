@@ -6,13 +6,13 @@ questions:
 - "How can I manipulate dataframes without repeating myself?"
 objectives:
 - " To be able to use the six main dataframe manipulation 'verbs' with pipes in  `dplyr`."
-- " To understand how `group_by()` and `summarize()` can be combined to summarize datasets."
+- " To understand how `group_by()` and `summarise()` can be combined to summarise datasets."
 - " Be able to analyze a subset of data using logical filtering."
 keypoints:
 - "Use the `dplyr` package to manipulate dataframes."
 - "Use `select()` to choose variables from a dataframe."
 - "Use `filter()` to choose data based on values."
-- "Use `group_by()` and `summarize()` to work with subsets of data."
+- "Use `group_by()` and `summarise()` to work with subsets of data."
 - "Use `mutate()` to create new variables."
 source: Rmd
 ---
@@ -83,7 +83,7 @@ pipes (`%>%`) to combine them.
 1. `select()`
 2. `filter()`
 3. `group_by()`
-4. `summarize()`
+4. `summarise()`
 5. `mutate()`
 
 If you have have not installed this package earlier, please do so:
@@ -99,6 +99,7 @@ Now let's load the package:
 
 ~~~
 library("dplyr")
+gapminder <- as_tibble(gapminder)
 ~~~
 {: .language-r}
 
@@ -118,9 +119,11 @@ year_country_gdp <- select(gapminder,year,country,gdpPercap)
 
 If we open up `year_country_gdp` we'll see that it only contains the year,
 country and gdpPercap. Above we used 'normal' grammar, but the strengths of
-`dplyr` lie in combining several functions using pipes. Since the pipes grammar
-is unlike anything we've seen in R before, let's repeat what we've done above
-using pipes.
+`dplyr` lie in combining several functions using pipes. 
+
+`dplyr` is arranged around verbs (select, filter, mutate, summarise), and pipes let us build up 'paragraphs'.
+
+Since the pipes grammar is unlike anything we've seen in R before, let's repeat what we've done above using pipes.
 
 
 ~~~
@@ -173,7 +176,93 @@ function, then we pass the filtered version of the gapminder dataframe to the
 case. If we used 'select' first, filter would not be able to find the variable
 continent since we would have removed it in the previous step.
 
-## Using group_by() and summarize()
+> ## Challenge 2
+>
+> Write a single command that will produce a dataframe that only has years
+> after 1975, and records where life expectancy is less than 50.
+> > ## Solution to Challenge 2
+> >
+> >~~~
+> >lifeExp_50_after_1975 <- gapminder %>% 
+> >                           filter(year > 1975, lifeExp < 50)
+> >~~~
+> >{: .language-r}
+> {: .solution}
+{: .challenge}
+
+## Using arrange()
+
+The `arrange()` verb does exactly what it says - arrange rows according to the values in variables. To define which variables are to be used, they are supplied to arrange in order or priority. By default, the values are arranged in ascending order. To arrange by descending order, wrap a variable name in `desc()`.
+
+> ## Challenge 3
+>
+> Find the record with the lowest population
+> > ## Solution to Challenge 3
+> >
+> >~~~
+> >gapminder %>% 
+> >   arrange(pop)
+> >~~~
+> >{: .language-r}
+> >
+> >
+> >
+> >~~~
+> ># A tibble: 1,704 x 6
+> >   country                year   pop continent lifeExp gdpPercap
+> >   <fct>                 <int> <dbl> <fct>       <dbl>     <dbl>
+> > 1 Sao Tome and Principe  1952 60011 Africa       46.5       880
+> > 2 Sao Tome and Principe  1957 61325 Africa       48.9       861
+> > 3 Djibouti               1952 63149 Africa       34.8      2670
+> > 4 Sao Tome and Principe  1962 65345 Africa       51.9      1072
+> > 5 Sao Tome and Principe  1967 70787 Africa       54.4      1385
+> > 6 Djibouti               1957 71851 Africa       37.3      2865
+> > 7 Sao Tome and Principe  1972 76595 Africa       56.5      1533
+> > 8 Sao Tome and Principe  1977 86796 Africa       58.6      1738
+> > 9 Djibouti               1962 89898 Africa       39.7      3021
+> >10 Sao Tome and Principe  1982 98593 Africa       60.4      1890
+> ># ... with 1,694 more rows
+> >~~~
+> >{: .output}
+> {: .solution}
+{: .challenge}
+
+> ## Challenge 4
+> 
+> Find the country with the lowest population after 1982 that also had a 
+> life expectancy greater than 70
+> > ## Solution to Challenge 4
+> >
+> >~~~
+> >gapminder %>% 
+> >   filter(year == 1982, lifeExp > 70) %>% 
+> >   arrange(pop)
+> >~~~
+> >{: .language-r}
+> >
+> >
+> >
+> >~~~
+> ># A tibble: 44 x 6
+> >   country     year     pop continent lifeExp gdpPercap
+> >   <fct>      <int>   <dbl> <fct>       <dbl>     <dbl>
+> > 1 Iceland     1982  233997 Europe       77.0     23270
+> > 2 Montenegro  1982  562548 Europe       74.1     11223
+> > 3 Kuwait      1982 1497494 Asia         71.3     31354
+> > 4 Slovenia    1982 1861252 Europe       71.1     17867
+> > 5 Panama      1982 2036305 Americas     70.5      7010
+> > 6 Jamaica     1982 2298309 Americas     71.2      6068
+> > 7 Costa Rica  1982 2424367 Americas     73.4      5263
+> > 8 Singapore   1982 2651869 Asia         71.8     15169
+> > 9 Albania     1982 2780097 Europe       70.4      3631
+> >10 Uruguay     1982 2953997 Americas     70.8      6920
+> ># ... with 34 more rows
+> >~~~
+> >{: .output}
+> {: .solution}
+{: .challenge}
+
+## Using group_by() and summarise()
 
 Now, we were supposed to be reducing the error prone repetitiveness of what can
 be done with base R, but up to now we haven't done that since we would have to
@@ -191,7 +280,7 @@ str(gapminder)
 
 
 ~~~
-'data.frame':	1704 obs. of  6 variables:
+Classes 'tbl_df', 'tbl' and 'data.frame':	1704 obs. of  6 variables:
  $ country  : Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
  $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
  $ pop      : num  8425333 9240934 10267083 11537966 13079460 ...
@@ -242,20 +331,20 @@ value `continent` (at least in the example above).
 
 ![](../fig/13-dplyr-fig2.png)
 
-## Using summarize()
+## Using summarise()
 
 The above was a bit on the uneventful side but `group_by()` is much more
-exciting in conjunction with `summarize()`. This will allow us to create new
+exciting in conjunction with `summarise()`. This will allow us to create new
 variable(s) by using functions that repeat for each of the continent-specific
 data frames. That is to say, using the `group_by()` function, we split our
 original dataframe into multiple pieces, then we can run functions
-(e.g. `mean()` or `sd()`) within `summarize()`.
+(e.g. `mean()` or `sd()`) within `summarise()`.
 
 
 ~~~
 gdp_bycontinents <- gapminder %>%
     group_by(continent) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap))
+    summarise(mean_gdpPercap=mean(gdpPercap))
 ~~~
 {: .language-r}
 
@@ -287,7 +376,7 @@ even better.
 > >~~~
 > >lifeExp_bycountry <- gapminder %>%
 > >    group_by(country) %>%
-> >    summarize(mean_lifeExp=mean(lifeExp))
+> >    summarise(mean_lifeExp=mean(lifeExp))
 > >lifeExp_bycountry %>%
 > >    filter(mean_lifeExp == min(mean_lifeExp) | mean_lifeExp == max(mean_lifeExp))
 > >~~~
@@ -354,17 +443,17 @@ The function `group_by()` allows us to group by multiple variables. Let's group 
 ~~~
 gdp_bycontinents_byyear <- gapminder %>%
     group_by(continent,year) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap))
+    summarise(mean_gdpPercap=mean(gdpPercap))
 ~~~
 {: .language-r}
 
-That is already quite powerful, but it gets even better! You're not limited to defining 1 new variable in `summarize()`.
+That is already quite powerful, but it gets even better! You're not limited to defining 1 new variable in `summarise()`.
 
 
 ~~~
 gdp_pop_bycontinents_byyear <- gapminder %>%
     group_by(continent,year) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap),
+    summarise(mean_gdpPercap=mean(gdpPercap),
               sd_gdpPercap=sd(gdpPercap),
               mean_pop=mean(pop),
               sd_pop=sd(pop))
@@ -405,13 +494,13 @@ gapminder %>%
 
 If we need to use the number of observations in calculations, the `n()` function
 is useful. For instance, if we wanted to get the standard error of the life
-expectency per continent:
+expectancy per continent:
 
 
 ~~~
 gapminder %>%
     group_by(continent) %>%
-    summarize(se_pop = sd(lifeExp)/sqrt(n()))
+    summarise(se_pop = sd(lifeExp)/sqrt(n()))
 ~~~
 {: .language-r}
 
@@ -435,7 +524,7 @@ You can also chain together several summary operations; in this case calculating
 ~~~
 gapminder %>%
     group_by(continent) %>%
-    summarize(
+    summarise(
       mean_le = mean(lifeExp),
       min_le = min(lifeExp),
       max_le = max(lifeExp),
@@ -466,7 +555,7 @@ We can also create new variables prior to (or even after) summarizing informatio
 gdp_pop_bycontinents_byyear <- gapminder %>%
     mutate(gdp_billion=gdpPercap*pop/10^9) %>%
     group_by(continent,year) %>%
-    summarize(mean_gdpPercap=mean(gdpPercap),
+    summarise(mean_gdpPercap=mean(gdpPercap),
               sd_gdpPercap=sd(gdpPercap),
               mean_pop=mean(pop),
               sd_pop=sd(pop),
@@ -489,7 +578,7 @@ of the data frame will not change) or for updating values depending on this give
 gdp_pop_bycontinents_byyear_above25 <- gapminder %>%
     mutate(gdp_billion = ifelse(lifeExp > 25, gdpPercap * pop / 10^9, NA)) %>%
     group_by(continent, year) %>%
-    summarize(mean_gdpPercap = mean(gdpPercap),
+    summarise(mean_gdpPercap = mean(gdpPercap),
               sd_gdpPercap = sd(gdpPercap),
               mean_pop = mean(pop),
               sd_pop = sd(pop),
@@ -501,7 +590,7 @@ gdp_pop_bycontinents_byyear_above25 <- gapminder %>%
 gdp_future_bycontinents_byyear_high_lifeExp <- gapminder %>%
     mutate(gdp_futureExpectation = ifelse(lifeExp > 40, gdpPercap * 1.5, gdpPercap)) %>%
     group_by(continent, year) %>%
-    summarize(mean_gdpPercap = mean(gdpPercap),
+    summarise(mean_gdpPercap = mean(gdpPercap),
               mean_gdpPercap_expected = mean(gdp_futureExpectation))
 ~~~
 {: .language-r}
@@ -524,7 +613,12 @@ ggplot(data = az.countries, aes(x = year, y = lifeExp, color = continent)) +
 ~~~
 {: .language-r}
 
-<img src="../fig/rmd-13-unnamed-chunk-21-1.png" title="plot of chunk unnamed-chunk-21" alt="plot of chunk unnamed-chunk-21" style="display: block; margin: auto;" />
+
+
+~~~
+Error in ggplot(data = az.countries, aes(x = year, y = lifeExp, color = continent)): could not find function "ggplot"
+~~~
+{: .error}
 
 This code makes the right plot but it also creates some variables (`starts.with`
 and `az.countries`) that we might not have any other uses for. Just as we used
@@ -548,7 +642,12 @@ gapminder %>%
 ~~~
 {: .language-r}
 
-<img src="../fig/rmd-13-unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" style="display: block; margin: auto;" />
+
+
+~~~
+Error in ggplot(., aes(x = year, y = lifeExp, color = continent)): could not find function "ggplot"
+~~~
+{: .error}
 
 Using `dplyr` functions also helps us simplify things, for example we could
 combine the first two steps:
@@ -565,7 +664,12 @@ gapminder %>%
 ~~~
 {: .language-r}
 
-<img src="../fig/rmd-13-unnamed-chunk-23-1.png" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" style="display: block; margin: auto;" />
+
+
+~~~
+Error in ggplot(., aes(x = year, y = lifeExp, color = continent)): could not find function "ggplot"
+~~~
+{: .error}
 
 > ## Advanced Challenge
 >
@@ -581,7 +685,7 @@ gapminder %>%
 > >    filter(year==2002) %>%
 > >    group_by(continent) %>%
 > >    sample_n(2) %>%
-> >    summarize(mean_lifeExp=mean(lifeExp)) %>%
+> >    summarise(mean_lifeExp=mean(lifeExp)) %>%
 > >    arrange(desc(mean_lifeExp))
 > >~~~
 > >{: .language-r}
