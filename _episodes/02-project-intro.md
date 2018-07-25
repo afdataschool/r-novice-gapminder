@@ -166,7 +166,7 @@ one to store the analysis scripts.
 Now we have a good directory structure we will now place/save the data file in the `data/` directory.
 
 > ## Challenge 1
-> Download the gapminder data from [here](({{ page.root }}/data/gapminder-FiveYearData.csv).
+> Download the gapminder data from [here]({{ page.root }}/data/gapminder-FiveYearData.csv).
 >
 > 1. Download the file (right mouse click -> "Save as")
 > 2. Make sure it's saved under the name `gapminder-FiveYearData.csv`
