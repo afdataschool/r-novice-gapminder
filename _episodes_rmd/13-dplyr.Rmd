@@ -74,9 +74,15 @@ library("dplyr")
 
 As we saw previously, dataframes are the engine of R's power. The `dplyr` package introduces a new and improved version of the dataframe - the tibble. In effect, dataframes and tibbles are interchangeable - tibbles keep everything that works about dataframes, and adds a few nifty features.
 
-You can convert a dataframe to a tibble by using `as_tibble()`.
+You can convert a dataframe to a tibble by using `as_tibble()`, or you can use another package `readr`, which provides a `read_csv()` function that returns a tibble.
+```{r, eval = FALSE}
+install.packages('readr')
+```
+
+We can now load the package and use `read_csv` to read the data into R as a tibble.
 ```{r}
-gapminder <- as_tibble(gapminder)
+library(readr)
+gapminder <- read_csv("data/gapminder-FiveYearData.csv")
 gapminder
 ```
 
@@ -86,6 +92,7 @@ You can see that when we print gapminder now, instead of getting an unwieldy amo
 >
 > What additional information does the `tibble` give us?
 > What functions would we need to use to get the same information from a traditional dataframe?
+> What do you notice about the country and continent variables that is different from using `read.csv()`?
 >
 > > ## Discussion 1
 > >
@@ -329,7 +336,7 @@ gdp_pop_bycontinents_byyear <- gapminder %>%
               sd_pop=sd(pop))
 ```
 
-## count() and n()
+## `count()` and `n()`
 
 A very common operation is to count the number of observations for each
 group. The `dplyr` package comes with two related functions that help with this.
@@ -383,33 +390,25 @@ gdp_pop_bycontinents_byyear <- gapminder %>%
               sd_gdp_billion = sd(gdp_billion))
 ```
 
-## Connect mutate with logical filtering: ifelse
+## Connect mutate with logical filtering: `case_when`
 
 When creating new variables, we can hook this with a logical condition. A simple combination of
-`mutate()` and `ifelse()` facilitates filtering right where it is needed: in the moment of creating something new.
-This easy-to-read statement is a fast and powerful way of discarding certain data (even though the overall dimension
-of the data frame will not change) or for updating values depending on this given condition.
+`mutate()` and `case_when()` facilitates filtering right where it is needed: in the moment of creating something new.
+This easy-to-read statement is a fast and powerful way of depending on particular  conditions.
 
 ```{r}
-## keeping all data but "filtering" after a certain condition
-# calculate GDP only for people with a life expectation above 25
-gdp_pop_bycontinents_byyear_above25 <- gapminder %>%
-    mutate(gdp_billion = ifelse(lifeExp > 25, gdpPercap * pop / 10^9, NA)) %>%
+## Classifying data into groups depending on life expectancy
+# Make categories based on life expectancy < 40, between 40 and 65, and > 65
+lifeExp_categories <- gapminder %>%
+    mutate(exp_cat = case_when(
+      lifeExp < 40 ~ "less than 40",
+      lifeExp >=40 & lifeExp < 65 ~ "between 40 and 65",
+      lifeExp >=65 ~ "above 65"
+      )) %>%
     group_by(continent, year) %>%
-    summarise(mean_gdpPercap = mean(gdpPercap),
-              sd_gdpPercap = sd(gdpPercap),
-              mean_pop = mean(pop),
-              sd_pop = sd(pop),
-              mean_gdp_billion = mean(gdp_billion),
-              sd_gdp_billion = sd(gdp_billion))
+    count(exp_cat)
 
-## updating only if certain condition is fullfilled
-# for life expectations above 40 years, the gpd to be expected in the future is scaled
-gdp_future_bycontinents_byyear_high_lifeExp <- gapminder %>%
-    mutate(gdp_futureExpectation = ifelse(lifeExp > 40, gdpPercap * 1.5, gdpPercap)) %>%
-    group_by(continent, year) %>%
-    summarise(mean_gdpPercap = mean(gdpPercap),
-              mean_gdpPercap_expected = mean(gdp_futureExpectation))
+lifeExp_categories
 ```
 
 ## Joining dataframes
@@ -424,7 +423,36 @@ These functions take two dataframes and combine them based on matching values in
 `full_join()` keeps all rows from both dataframes.
 `anti_join()` only keeps rows from the first dataframe that *don't* match the second.
 
-In the `/data` directory, we have a second set of data about countries' populations, `gapminder_sex_ratios.csv`. Let's read that in and join it to our existing data.
+Let's make a couple of simple data.frames to demonstrate how a join works.
+
+```{r}
+df1 <- data_frame(sample = c(1, 2, 3),
+                  measure1 = c(4.2, 5.3, 6.1))
+df2 <- data_frame(sample = c(1, 3, 4),
+                  measure2 = c(7.8, 6.4, 9.0))
+```
+
+Now we can use each of the joins on these two data.frames:
+
+```{r}
+left_join(df1, df2)
+```
+
+```{r}
+right_join(df1, df2)
+```
+
+```{r}
+full_join(df1, df2)
+```
+
+```{r}
+anti_join(df1, df2)
+```
+
+For a more realistic example, let's use gapminder again.
+
+Download the `gapminder_sex_ratios.csv` data from [here]({{ page.root }}/data/gapminder_sex_ratios.csv), and save it under our `/data` directory. Let's read that in and join it to our existing data.
 
 ```{r}
 gapminder_sr <- read_csv("data/gapminder_sex_ratios.csv")
