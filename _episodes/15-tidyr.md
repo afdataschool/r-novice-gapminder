@@ -32,8 +32,86 @@ library("tidyverse")
 > imported, with `sessionInfo()`
 {: .callout}
 
+Before getting into a real example, we'll have a look at a toy dataset. The following dataframe has two weight measurements for three different cows. Have a look at the way the data is structured. Is it tidy?
 
-First, lets look at the structure of our original gapminder dataframe. Because it's a tibble, we can just print it, or use `str()`:
+
+~~~
+cows <- data_frame(id = c(1, 2, 3),
+                   weight1 = c(203, 227, 193),
+                   weight2 = c(365, 344, 329))
+cows
+~~~
+{: .language-r}
+
+
+
+~~~
+# A tibble: 3 x 3
+     id weight1 weight2
+  <dbl>   <dbl>   <dbl>
+1    1.    203.    365.
+2    2.    227.    344.
+3    3.    193.    329.
+~~~
+{: .output}
+
+To make this dataframe tidy, we would need to have only one weight variable, and another variable describing whether it is measurement 1 or 2. The `gather()` function from tidyr can do this conversion for us.
+
+We need to tell `gather()` the name of the new `key` variable, and the name of the new `value` variable. The `key` variable will contain what used to be column names, and the `value variable will contain the cell contents.
+
+We then tell `gather()` which variables should be gathered together.
+
+
+~~~
+cows_long <- cows %>% 
+  gather(measurement, weight, weight1, weight2)
+cows_long
+~~~
+{: .language-r}
+
+
+
+~~~
+# A tibble: 6 x 3
+     id measurement weight
+  <dbl> <chr>        <dbl>
+1    1. weight1       203.
+2    2. weight1       227.
+3    3. weight1       193.
+4    1. weight2       365.
+5    2. weight2       344.
+6    3. weight2       329.
+~~~
+{: .output}
+
+This is now a tidy dataframe. Let's have a look at the way `gather()` has changed the original data.
+
+![](../fig/tidyr_gif.gif)
+
+As well as going from wide to long, we can go back the other way. Instead of `gather()`, we need to `spread()` the data.
+
+
+~~~
+cows_long %>% 
+  spread(measurement, weight)
+~~~
+{: .language-r}
+
+
+
+~~~
+# A tibble: 3 x 3
+     id weight1 weight2
+  <dbl>   <dbl>   <dbl>
+1    1.    203.    365.
+2    2.    227.    344.
+3    3.    193.    329.
+~~~
+{: .output}
+
+## Realistic example
+
+Now we can look at the structure of our original gapminder dataframe. Because it's a tibble, we can just print it, or use `str()`:
 
 
 ~~~
@@ -100,7 +178,7 @@ Until now, we've been using the nicely formatted original gapminder dataset, but
 let's start with the wide format version of the gapminder dataset.
 
 > Download the wide version of the gapminder data from [here](https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv)
-and save it in your data folder.
+and save it in your `data` directory.
 
 We'll load the data file and look at it.  Note: we don't want our continent and
 country columns to be factors, so if you're using `read.csv`, remember the stringsAsFactors argument to disable that. `read_csv()` doesn't convert strings to factors by default. It also gives output to describe how it's treating each column as they are read in.
@@ -135,133 +213,37 @@ See spec(...) for full column specifications.
 
 
 ~~~
-str(gap_wide)
+gap_wide
 ~~~
 {: .language-r}
 
 
 
 ~~~
-Classes 'tbl_df', 'tbl' and 'data.frame':	142 obs. of  38 variables:
- $ continent     : chr  "Africa" "Africa" "Africa" "Africa" ...
- $ country       : chr  "Algeria" "Angola" "Benin" "Botswana" ...
- $ gdpPercap_1952: num  2449 3521 1063 851 543 ...
- $ gdpPercap_1957: num  3014 3828 960 918 617 ...
- $ gdpPercap_1962: num  2551 4269 949 984 723 ...
- $ gdpPercap_1967: num  3247 5523 1036 1215 795 ...
- $ gdpPercap_1972: num  4183 5473 1086 2264 855 ...
- $ gdpPercap_1977: num  4910 3009 1029 3215 743 ...
- $ gdpPercap_1982: num  5745 2757 1278 4551 807 ...
- $ gdpPercap_1987: num  5681 2430 1226 6206 912 ...
- $ gdpPercap_1992: num  5023 2628 1191 7954 932 ...
- $ gdpPercap_1997: num  4797 2277 1233 8647 946 ...
- $ gdpPercap_2002: num  5288 2773 1373 11004 1038 ...
- $ gdpPercap_2007: num  6223 4797 1441 12570 1217 ...
- $ lifeExp_1952  : num  43.1 30 38.2 47.6 32 ...
- $ lifeExp_1957  : num  45.7 32 40.4 49.6 34.9 ...
- $ lifeExp_1962  : num  48.3 34 42.6 51.5 37.8 ...
- $ lifeExp_1967  : num  51.4 36 44.9 53.3 40.7 ...
- $ lifeExp_1972  : num  54.5 37.9 47 56 43.6 ...
- $ lifeExp_1977  : num  58 39.5 49.2 59.3 46.1 ...
- $ lifeExp_1982  : num  61.4 39.9 50.9 61.5 48.1 ...
- $ lifeExp_1987  : num  65.8 39.9 52.3 63.6 49.6 ...
- $ lifeExp_1992  : num  67.7 40.6 53.9 62.7 50.3 ...
- $ lifeExp_1997  : num  69.2 41 54.8 52.6 50.3 ...
- $ lifeExp_2002  : num  71 41 54.4 46.6 50.6 ...
- $ lifeExp_2007  : num  72.3 42.7 56.7 50.7 52.3 ...
- $ pop_1952      : num  9279525 4232095 1738315 442308 4469979 ...
- $ pop_1957      : num  10270856 4561361 1925173 474639 4713416 ...
- $ pop_1962      : num  11000948 4826015 2151895 512764 4919632 ...
- $ pop_1967      : num  12760499 5247469 2427334 553541 5127935 ...
- $ pop_1972      : num  14760787 5894858 2761407 619351 5433886 ...
- $ pop_1977      : num  17152804 6162675 3168267 781472 5889574 ...
- $ pop_1982      : num  20033753 7016384 3641603 970347 6634596 ...
- $ pop_1987      : num  23254956 7874230 4243788 1151184 7586551 ...
- $ pop_1992      : num  26298373 8735988 4981671 1342614 8878303 ...
- $ pop_1997      : num  29072015 9875024 6066080 1536536 10352843 ...
- $ pop_2002      : int  31287142 10866106 7026113 1630347 12251209 7021078 15929988 4048013 8835739 614382 ...
- $ pop_2007      : int  33333216 12420476 8078314 1639131 14326203 8390505 17696293 4369038 10238807 710960 ...
- - attr(*, "spec")=List of 2
-  ..$ cols   :List of 38
-  .. ..$ continent     : list()
-  .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
-  .. ..$ country       : list()
-  .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
-  .. ..$ gdpPercap_1952: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1957: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1962: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1967: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1972: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1977: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1982: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1987: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1992: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_1997: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_2002: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ gdpPercap_2007: list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1952  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1957  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1962  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1967  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1972  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1977  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1982  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1987  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1992  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_1997  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_2002  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ lifeExp_2007  : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1952      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1957      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1962      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1967      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1972      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1977      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1982      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1987      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1992      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_1997      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
-  .. ..$ pop_2002      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_integer" "collector"
-  .. ..$ pop_2007      : list()
-  .. .. ..- attr(*, "class")= chr  "collector_integer" "collector"
-  ..$ default: list()
-  .. ..- attr(*, "class")= chr  "collector_guess" "collector"
-  ..- attr(*, "class")= chr "col_spec"
+# A tibble: 142 x 38
+   continent country          gdpPercap_1952 gdpPercap_1957 gdpPercap_1962
+   <chr>     <chr>                     <dbl>          <dbl>          <dbl>
+ 1 Africa    Algeria                   2449.          3014.          2551.
+ 2 Africa    Angola                    3521.          3828.          4269.
+ 3 Africa    Benin                     1063.           960.           949.
+ 4 Africa    Botswana                   851.           918.           984.
+ 5 Africa    Burkina Faso               543.           617.           723.
+ 6 Africa    Burundi                    339.           380.           355.
+ 7 Africa    Cameroon                  1173.          1313.          1400.
+ 8 Africa    Central African…          1071.          1191.          1193.
+ 9 Africa    Chad                      1179.          1308.          1390.
+10 Africa    Comoros                   1103.          1211.          1407.
+# ... with 132 more rows, and 33 more variables: gdpPercap_1967 <dbl>,
+#   gdpPercap_1972 <dbl>, gdpPercap_1977 <dbl>, gdpPercap_1982 <dbl>,
+#   gdpPercap_1987 <dbl>, gdpPercap_1992 <dbl>, gdpPercap_1997 <dbl>,
+#   gdpPercap_2002 <dbl>, gdpPercap_2007 <dbl>, lifeExp_1952 <dbl>,
+#   lifeExp_1957 <dbl>, lifeExp_1962 <dbl>, lifeExp_1967 <dbl>,
+#   lifeExp_1972 <dbl>, lifeExp_1977 <dbl>, lifeExp_1982 <dbl>,
+#   lifeExp_1987 <dbl>, lifeExp_1992 <dbl>, lifeExp_1997 <dbl>,
+#   lifeExp_2002 <dbl>, lifeExp_2007 <dbl>, pop_1952 <dbl>,
+#   pop_1957 <dbl>, pop_1962 <dbl>, pop_1967 <dbl>, pop_1972 <dbl>,
+#   pop_1977 <dbl>, pop_1982 <dbl>, pop_1987 <dbl>, pop_1992 <dbl>,
+#   pop_1997 <dbl>, pop_2002 <int>, pop_2007 <int>
 ~~~
 {: .output}
 

@@ -16,6 +16,14 @@ source: Rmd
 
 
 
+> Happy families are all alike; every unhappy family is unhappy in its own way
+>
+> *Leo Tolstoy*
+
+> Tidy data are all alike; every untidy data is untidy in its own way
+>
+>*Hadley Wickham*
+
 Data can come in many different shapes and forms, and often people invent whatever makes sense to them. This often means that a great deal of time is spent modifying data to be structured in a format that R can use.
 
 Within R, different packages can have different expectations about data structures, which can make it difficult to move between functions in different packages.
@@ -114,7 +122,7 @@ In the above the same variable (a measurement value) was stored in two different
 
 > ## Challenge 3
 >
-> Open the file `examples/plates.xlsx`. This is a very common format to store data
+> Open the file `plates.xlsx` (download [here]({{ page.root }}/data/gapminder_sex_ratios.csv)). This is a very common format to store data
 > from 96-well plates. What would this look like if it was tidy? Discuss the steps you would need to go through to convert it to a tidy format.
 {: .challenge}
 
@@ -159,7 +167,7 @@ Warning: replacing previous import by 'tidyr::spread' when loading 'broom'
 
 ~~~
 ✔ tibble  1.4.2     ✔ purrr   0.2.4
-✔ readr   1.1.1     ✔ forcats 0.3.0
+✔ tibble  1.4.2     ✔ forcats 0.3.0
 ~~~
 {: .output}
 

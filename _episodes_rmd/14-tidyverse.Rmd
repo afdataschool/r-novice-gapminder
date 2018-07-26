@@ -23,6 +23,14 @@ knitr_fig_path("13-")
 gapminder <- read.csv("data/gapminder-FiveYearData.csv", header=TRUE)
 ```
 
+> Happy families are all alike; every unhappy family is unhappy in its own way
+>
+> *Leo Tolstoy*
+
+> Tidy data are all alike; every untidy data is untidy in its own way
+>
+>*Hadley Wickham*
+
 Data can come in many different shapes and forms, and often people invent whatever makes sense to them. This often means that a great deal of time is spent modifying data to be structured in a format that R can use.
 
 Within R, different packages can have different expectations about data structures, which can make it difficult to move between functions in different packages.
@@ -70,7 +78,7 @@ In the above the same variable (a measurement value) was stored in two different
 
 > ## Challenge 3
 >
-> Open the file `examples/plates.xlsx`. This is a very common format to store data
+> Open the file `plates.xlsx` (download [here]({{ page.root }}/data/gapminder_sex_ratios.csv)). This is a very common format to store data
 > from 96-well plates. What would this look like if it was tidy? Discuss the steps you would need to go through to convert it to a tidy format.
 {: .challenge}
 

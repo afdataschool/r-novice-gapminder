@@ -53,8 +53,41 @@ library("tidyverse")
 > imported, with `sessionInfo()`
 {: .callout}
 
+Before getting into a real example, we'll have a look at a toy dataset. The following dataframe has two weight measurements for three different cows. Have a look at the way the data is structured. Is it tidy?
 
-First, lets look at the structure of our original gapminder dataframe. Because it's a tibble, we can just print it, or use `str()`:
+```{r}
+cows <- data_frame(id = c(1, 2, 3),
+                   weight1 = c(203, 227, 193),
+                   weight2 = c(365, 344, 329))
+cows
+```
+
+To make this dataframe tidy, we would need to have only one weight variable, and another variable describing whether it is measurement 1 or 2. The `gather()` function from tidyr can do this conversion for us.
+
+We need to tell `gather()` the name of the new `key` variable, and the name of the new `value` variable. The `key` variable will contain what used to be column names, and the `value variable will contain the cell contents.
+
+We then tell `gather()` which variables should be gathered together.
+
+```{r}
+cows_long <- cows %>% 
+  gather(measurement, weight, weight1, weight2)
+cows_long
+```
+
+This is now a tidy dataframe. Let's have a look at the way `gather()` has changed the original data.
+
+![](../fig/tidyr_gif.gif)
+
+As well as going from wide to long, we can go back the other way. Instead of `gather()`, we need to `spread()` the data.
+
+```{r}
+cows_long %>% 
+  spread(measurement, weight)
+```
+
+## Realistic example
+
+Now we can look at the structure of our original gapminder dataframe. Because it's a tibble, we can just print it, or use `str()`:
 
 ```{r}
 gapminder
@@ -99,14 +132,14 @@ Until now, we've been using the nicely formatted original gapminder dataset, but
 let's start with the wide format version of the gapminder dataset.
 
 > Download the wide version of the gapminder data from [here](https://raw.githubusercontent.com/swcarpentry/r-novice-gapminder/gh-pages/_episodes_rmd/data/gapminder_wide.csv)
-and save it in your data folder.
+and save it in your `data` directory.
 
 We'll load the data file and look at it.  Note: we don't want our continent and
 country columns to be factors, so if you're using `read.csv`, remember the stringsAsFactors argument to disable that. `read_csv()` doesn't convert strings to factors by default. It also gives output to describe how it's treating each column as they are read in.
 
 ```{r}
 gap_wide <- read_csv("data/gapminder_wide.csv")
-str(gap_wide)
+gap_wide
 ```
 
 ![](../fig/15-tidyr-fig2.png)
