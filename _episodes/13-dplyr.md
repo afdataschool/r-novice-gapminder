@@ -108,10 +108,39 @@ library("dplyr")
 
 As we saw previously, dataframes are the engine of R's power. The `dplyr` package introduces a new and improved version of the dataframe - the tibble. In effect, dataframes and tibbles are interchangeable - tibbles keep everything that works about dataframes, and adds a few nifty features.
 
-You can convert a dataframe to a tibble by using `as_tibble()`.
+You can convert a dataframe to a tibble by using `as_tibble()`, or you can use another package `readr`, which provides a `read_csv()` function that returns a tibble.
 
 ~~~
-gapminder <- as_tibble(gapminder)
+install.packages('readr')
+~~~
+{: .language-r}
+
+We can now load the package and use `read_csv` to read the data into R as a tibble.
+
+~~~
+library(readr)
+gapminder <- read_csv("data/gapminder-FiveYearData.csv")
+~~~
+{: .language-r}
+
+
+
+~~~
+Parsed with column specification:
+cols(
+  country = col_character(),
+  year = col_integer(),
+  pop = col_double(),
+  continent = col_character(),
+  lifeExp = col_double(),
+  gdpPercap = col_double()
+)
+~~~
+{: .output}
+
+
+
+~~~
 gapminder
 ~~~
 {: .language-r}
@@ -121,7 +150,7 @@ gapminder
 ~~~
 # A tibble: 1,704 x 6
    country      year       pop continent lifeExp gdpPercap
-   <fct>       <int>     <dbl> <fct>       <dbl>     <dbl>
+   <chr>       <int>     <dbl> <chr>       <dbl>     <dbl>
  1 Afghanistan  1952  8425333. Asia         28.8      779.
  2 Afghanistan  1957  9240934. Asia         30.3      821.
  3 Afghanistan  1962 10267083. Asia         32.0      853.
@@ -142,6 +171,7 @@ You can see that when we print gapminder now, instead of getting an unwieldy amo
 >
 > What additional information does the `tibble` give us?
 > What functions would we need to use to get the same information from a traditional dataframe?
+> What do you notice about the country and continent variables that is different from using `read.csv()`?
 >
 > > ## Discussion 1
 > >
@@ -205,7 +235,7 @@ gapminder %>%
 ~~~
 # A tibble: 1,704 x 3
    country      year       pop
-   <fct>       <int>     <dbl>
+   <chr>       <int>     <dbl>
  1 Afghanistan  1952  8425333.
  2 Afghanistan  1957  9240934.
  3 Afghanistan  1962 10267083.
@@ -239,7 +269,7 @@ Additionally, you can select based on the names of columns. `starts_with()`, `en
 > >~~~
 > ># A tibble: 1,704 x 2
 > >   country     continent
-> >   <fct>       <fct>    
+> >   <chr>       <chr>    
 > > 1 Afghanistan Asia     
 > > 2 Afghanistan Asia     
 > > 3 Afghanistan Asia     
@@ -362,7 +392,7 @@ The `arrange()` verb does exactly what it says - arrange rows according to the v
 > >~~~
 > ># A tibble: 1,704 x 6
 > >   country                year    pop continent lifeExp gdpPercap
-> >   <fct>                 <int>  <dbl> <fct>       <dbl>     <dbl>
+> >   <chr>                 <int>  <dbl> <chr>       <dbl>     <dbl>
 > > 1 Sao Tome and Principe  1952 60011. Africa       46.5      880.
 > > 2 Sao Tome and Principe  1957 61325. Africa       48.9      861.
 > > 3 Djibouti               1952 63149. Africa       34.8     2670.
@@ -397,7 +427,7 @@ The `arrange()` verb does exactly what it says - arrange rows according to the v
 > >~~~
 > ># A tibble: 44 x 6
 > >   country     year      pop continent lifeExp gdpPercap
-> >   <fct>      <int>    <dbl> <fct>       <dbl>     <dbl>
+> >   <chr>      <int>    <dbl> <chr>       <dbl>     <dbl>
 > > 1 Iceland     1982  233997. Europe       77.0    23270.
 > > 2 Montenegro  1982  562548. Europe       74.1    11223.
 > > 3 Kuwait      1982 1497494. Asia         71.3    31354.
@@ -433,12 +463,29 @@ str(gapminder)
 
 ~~~
 Classes 'tbl_df', 'tbl' and 'data.frame':	1704 obs. of  6 variables:
- $ country  : Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ country  : chr  "Afghanistan" "Afghanistan" "Afghanistan" "Afghanistan" ...
  $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
  $ pop      : num  8425333 9240934 10267083 11537966 13079460 ...
- $ continent: Factor w/ 5 levels "Africa","Americas",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ continent: chr  "Asia" "Asia" "Asia" "Asia" ...
  $ lifeExp  : num  28.8 30.3 32 34 36.1 ...
  $ gdpPercap: num  779 821 853 836 740 ...
+ - attr(*, "spec")=List of 2
+  ..$ cols   :List of 6
+  .. ..$ country  : list()
+  .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+  .. ..$ year     : list()
+  .. .. ..- attr(*, "class")= chr  "collector_integer" "collector"
+  .. ..$ pop      : list()
+  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  .. ..$ continent: list()
+  .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+  .. ..$ lifeExp  : list()
+  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  .. ..$ gdpPercap: list()
+  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  ..$ default: list()
+  .. ..- attr(*, "class")= chr  "collector_guess" "collector"
+  ..- attr(*, "class")= chr "col_spec"
 ~~~
 {: .output}
 
@@ -453,12 +500,29 @@ str(gapminder %>% group_by(continent))
 
 ~~~
 Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':	1704 obs. of  6 variables:
- $ country  : Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ country  : chr  "Afghanistan" "Afghanistan" "Afghanistan" "Afghanistan" ...
  $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
  $ pop      : num  8425333 9240934 10267083 11537966 13079460 ...
- $ continent: Factor w/ 5 levels "Africa","Americas",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ continent: chr  "Asia" "Asia" "Asia" "Asia" ...
  $ lifeExp  : num  28.8 30.3 32 34 36.1 ...
  $ gdpPercap: num  779 821 853 836 740 ...
+ - attr(*, "spec")=List of 2
+  ..$ cols   :List of 6
+  .. ..$ country  : list()
+  .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+  .. ..$ year     : list()
+  .. .. ..- attr(*, "class")= chr  "collector_integer" "collector"
+  .. ..$ pop      : list()
+  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  .. ..$ continent: list()
+  .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+  .. ..$ lifeExp  : list()
+  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  .. ..$ gdpPercap: list()
+  .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  ..$ default: list()
+  .. ..- attr(*, "class")= chr  "collector_guess" "collector"
+  ..- attr(*, "class")= chr "col_spec"
  - attr(*, "vars")= chr "continent"
  - attr(*, "drop")= logi TRUE
  - attr(*, "indices")=List of 5
@@ -470,7 +534,24 @@ Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame':	1704 obs. of  6 variable
  - attr(*, "group_sizes")= int  624 300 396 360 24
  - attr(*, "biggest_group_size")= int 624
  - attr(*, "labels")='data.frame':	5 obs. of  1 variable:
-  ..$ continent: Factor w/ 5 levels "Africa","Americas",..: 1 2 3 4 5
+  ..$ continent: chr  "Africa" "Americas" "Asia" "Europe" ...
+  ..- attr(*, "spec")=List of 2
+  .. ..$ cols   :List of 6
+  .. .. ..$ country  : list()
+  .. .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+  .. .. ..$ year     : list()
+  .. .. .. ..- attr(*, "class")= chr  "collector_integer" "collector"
+  .. .. ..$ pop      : list()
+  .. .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  .. .. ..$ continent: list()
+  .. .. .. ..- attr(*, "class")= chr  "collector_character" "collector"
+  .. .. ..$ lifeExp  : list()
+  .. .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  .. .. ..$ gdpPercap: list()
+  .. .. .. ..- attr(*, "class")= chr  "collector_double" "collector"
+  .. ..$ default: list()
+  .. .. ..- attr(*, "class")= chr  "collector_guess" "collector"
+  .. ..- attr(*, "class")= chr "col_spec"
   ..- attr(*, "vars")= chr "continent"
   ..- attr(*, "drop")= logi TRUE
 ~~~
@@ -539,7 +620,7 @@ even better.
 > >~~~
 > ># A tibble: 142 x 2
 > >   country           mean_lifeExp
-> >   <fct>                    <dbl>
+> >   <chr>                    <dbl>
 > > 1 Sierra Leone              36.8
 > > 2 Afghanistan               37.5
 > > 3 Angola                    37.9
@@ -567,7 +648,7 @@ even better.
 > >~~~
 > ># A tibble: 142 x 2
 > >   country     mean_lifeExp
-> >   <fct>              <dbl>
+> >   <chr>              <dbl>
 > > 1 Iceland             76.5
 > > 2 Sweden              76.2
 > > 3 Norway              75.8
@@ -608,7 +689,7 @@ gdp_pop_bycontinents_byyear <- gapminder %>%
 ~~~
 {: .language-r}
 
-## count() and n()
+## `count()` and `n()`
 
 A very common operation is to count the number of observations for each
 group. The `dplyr` package comes with two related functions that help with this.
@@ -631,7 +712,7 @@ gapminder %>%
 ~~~
 # A tibble: 5 x 2
   continent     n
-  <fct>     <int>
+  <chr>     <int>
 1 Africa       52
 2 Asia         33
 3 Europe       30
@@ -657,7 +738,7 @@ gapminder %>%
 ~~~
 # A tibble: 5 x 2
   continent se_pop
-  <fct>      <dbl>
+  <chr>      <dbl>
 1 Africa     0.366
 2 Americas   0.540
 3 Asia       0.596
@@ -685,7 +766,7 @@ gapminder %>%
 ~~~
 # A tibble: 5 x 5
   continent mean_le min_le max_le se_le
-  <fct>       <dbl>  <dbl>  <dbl> <dbl>
+  <chr>       <dbl>  <dbl>  <dbl> <dbl>
 1 Africa       48.9   23.6   76.4 0.366
 2 Americas     64.7   37.6   80.7 0.540
 3 Asia         60.1   28.8   82.6 0.596
@@ -712,36 +793,49 @@ gdp_pop_bycontinents_byyear <- gapminder %>%
 ~~~
 {: .language-r}
 
-## Connect mutate with logical filtering: ifelse
+## Connect mutate with logical filtering: `case_when`
 
 When creating new variables, we can hook this with a logical condition. A simple combination of
-`mutate()` and `ifelse()` facilitates filtering right where it is needed: in the moment of creating something new.
-This easy-to-read statement is a fast and powerful way of discarding certain data (even though the overall dimension
-of the data frame will not change) or for updating values depending on this given condition.
+`mutate()` and `case_when()` facilitates filtering right where it is needed: in the moment of creating something new.
+This easy-to-read statement is a fast and powerful way of depending on particular  conditions.
 
 
 ~~~
-## keeping all data but "filtering" after a certain condition
-# calculate GDP only for people with a life expectation above 25
-gdp_pop_bycontinents_byyear_above25 <- gapminder %>%
-    mutate(gdp_billion = ifelse(lifeExp > 25, gdpPercap * pop / 10^9, NA)) %>%
+## Classifying data into groups depending on life expectancy
+# Make categories based on life expectancy < 40, between 40 and 65, and > 65
+lifeExp_categories <- gapminder %>%
+    mutate(exp_cat = case_when(
+      lifeExp < 40 ~ "less than 40",
+      lifeExp >=40 & lifeExp < 65 ~ "between 40 and 65",
+      lifeExp >=65 ~ "above 65"
+      )) %>%
     group_by(continent, year) %>%
-    summarise(mean_gdpPercap = mean(gdpPercap),
-              sd_gdpPercap = sd(gdpPercap),
-              mean_pop = mean(pop),
-              sd_pop = sd(pop),
-              mean_gdp_billion = mean(gdp_billion),
-              sd_gdp_billion = sd(gdp_billion))
+    count(exp_cat)
 
-## updating only if certain condition is fullfilled
-# for life expectations above 40 years, the gpd to be expected in the future is scaled
-gdp_future_bycontinents_byyear_high_lifeExp <- gapminder %>%
-    mutate(gdp_futureExpectation = ifelse(lifeExp > 40, gdpPercap * 1.5, gdpPercap)) %>%
-    group_by(continent, year) %>%
-    summarise(mean_gdpPercap = mean(gdpPercap),
-              mean_gdpPercap_expected = mean(gdp_futureExpectation))
+lifeExp_categories
 ~~~
 {: .language-r}
+
+
+
+~~~
+# A tibble: 119 x 4
+# Groups:   continent, year [60]
+   continent  year exp_cat               n
+   <chr>     <int> <chr>             <int>
+ 1 Africa     1952 between 40 and 65    23
+ 2 Africa     1952 less than 40         29
+ 3 Africa     1957 between 40 and 65    29
+ 4 Africa     1957 less than 40         23
+ 5 Africa     1962 between 40 and 65    37
+ 6 Africa     1962 less than 40         15
+ 7 Africa     1967 between 40 and 65    42
+ 8 Africa     1967 less than 40         10
+ 9 Africa     1972 between 40 and 65    46
+10 Africa     1972 less than 40          6
+# ... with 109 more rows
+~~~
+{: .output}
 
 ## Joining dataframes
 
@@ -755,7 +849,121 @@ These functions take two dataframes and combine them based on matching values in
 `full_join()` keeps all rows from both dataframes.
 `anti_join()` only keeps rows from the first dataframe that *don't* match the second.
 
-In the `/data` directory, we have a second set of data about countries' populations, `gapminder_sex_ratios.csv`. Let's read that in and join it to our existing data.
+Let's make a couple of simple data.frames to demonstrate how a join works.
+
+
+~~~
+df1 <- data_frame(sample = c(1, 2, 3),
+                  measure1 = c(4.2, 5.3, 6.1))
+df2 <- data_frame(sample = c(1, 3, 4),
+                  measure2 = c(7.8, 6.4, 9.0))
+~~~
+{: .language-r}
+
+Now we can use each of the joins on these two data.frames:
+
+
+~~~
+left_join(df1, df2)
+~~~
+{: .language-r}
+
+
+
+~~~
+Joining, by = "sample"
+~~~
+{: .output}
+
+
+
+~~~
+# A tibble: 3 x 3
+  sample measure1 measure2
+   <dbl>    <dbl>    <dbl>
+1     1.     4.20     7.80
+2     2.     5.30    NA   
+3     3.     6.10     6.40
+~~~
+{: .output}
+
+
+~~~
+right_join(df1, df2)
+~~~
+{: .language-r}
+
+
+
+~~~
+Joining, by = "sample"
+~~~
+{: .output}
+
+
+
+~~~
+# A tibble: 3 x 3
+  sample measure1 measure2
+   <dbl>    <dbl>    <dbl>
+1     1.     4.20     7.80
+2     3.     6.10     6.40
+3     4.    NA        9.00
+~~~
+{: .output}
+
+
+~~~
+full_join(df1, df2)
+~~~
+{: .language-r}
+
+
+
+~~~
+Joining, by = "sample"
+~~~
+{: .output}
+
+
+
+~~~
+# A tibble: 4 x 3
+  sample measure1 measure2
+   <dbl>    <dbl>    <dbl>
+1     1.     4.20     7.80
+2     2.     5.30    NA   
+3     3.     6.10     6.40
+4     4.    NA        9.00
+~~~
+{: .output}
+
+
+~~~
+anti_join(df1, df2)
+~~~
+{: .language-r}
+
+
+
+~~~
+Joining, by = "sample"
+~~~
+{: .output}
+
+
+
+~~~
+# A tibble: 1 x 2
+  sample measure1
+   <dbl>    <dbl>
+1     2.     5.30
+~~~
+{: .output}
+
+For a more realistic example, let's use gapminder again.
+
+Download the `gapminder_sex_ratios.csv` data from [here]({{ page.root }}/data/gapminder_sex_ratios.csv), and save it under our `/data` directory. Let's read that in and join it to our existing data.
 
 
 ~~~
@@ -766,9 +974,14 @@ gapminder_sr <- read_csv("data/gapminder_sex_ratios.csv")
 
 
 ~~~
-Error in eval(expr, envir, enclos): could not find function "read_csv"
+Parsed with column specification:
+cols(
+  country = col_character(),
+  year = col_integer(),
+  sex_ratio = col_double()
+)
 ~~~
-{: .error}
+{: .output}
 
 
 
@@ -780,9 +993,22 @@ gapminder_sr
 
 
 ~~~
-Error in eval(expr, envir, enclos): object 'gapminder_sr' not found
+# A tibble: 1,722 x 3
+   country     year sex_ratio
+   <chr>      <int>     <dbl>
+ 1 Burundi     1952      91.9
+ 2 Comoros     1952      98.8
+ 3 Djibouti    1952      98.6
+ 4 Eritrea     1952      98.2
+ 5 Ethiopia    1952      98.6
+ 6 Kenya       1952     102. 
+ 7 Madagascar  1952     106. 
+ 8 Malawi      1952      92.3
+ 9 Mauritius   1952      99.2
+10 Mozambique  1952      95.6
+# ... with 1,712 more rows
 ~~~
-{: .error}
+{: .output}
 
 
 
@@ -794,9 +1020,9 @@ gapminder_left_join <- left_join(gapminder, gapminder_sr)
 
 
 ~~~
-Error in tbl_vars(y): object 'gapminder_sr' not found
+Joining, by = c("country", "year")
 ~~~
-{: .error}
+{: .output}
 
 
 
@@ -808,9 +1034,22 @@ gapminder_left_join
 
 
 ~~~
-Error in eval(expr, envir, enclos): object 'gapminder_left_join' not found
+# A tibble: 1,704 x 7
+   country      year       pop continent lifeExp gdpPercap sex_ratio
+   <chr>       <int>     <dbl> <chr>       <dbl>     <dbl>     <dbl>
+ 1 Afghanistan  1952  8425333. Asia         28.8      779.      112.
+ 2 Afghanistan  1957  9240934. Asia         30.3      821.      109.
+ 3 Afghanistan  1962 10267083. Asia         32.0      853.      107.
+ 4 Afghanistan  1967 11537966. Asia         34.0      836.      105.
+ 5 Afghanistan  1972 13079460. Asia         36.1      740.      104.
+ 6 Afghanistan  1977 14880372. Asia         38.4      786.      103.
+ 7 Afghanistan  1982 12881816. Asia         39.9      978.      104.
+ 8 Afghanistan  1987 13867957. Asia         40.8      852.      104.
+ 9 Afghanistan  1992 16317921. Asia         41.7      649.      105.
+10 Afghanistan  1997 22227415. Asia         41.8      635.      107.
+# ... with 1,694 more rows
 ~~~
-{: .error}
+{: .output}
 
 > ## Challenge 8
 > 
