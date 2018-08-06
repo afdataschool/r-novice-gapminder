@@ -229,7 +229,7 @@ lines.
 
 ## Transformations and statistics
 
-Ggplot also makes it easy to overlay statistical models over the data. To
+`ggplot2` also makes it easy to overlay statistical models over the data. To
 demonstrate we'll go back to our first example:
 
 
@@ -446,3 +446,10 @@ code to modify!
 > > <img src="../fig/rmd-08-ch5-sol-adv-1.png" title="plot of chunk ch5-sol-adv" alt="plot of chunk ch5-sol-adv" style="display: block; margin: auto;" />
 > {: .solution}
 {: .challenge}
+
+
+> ## Challenge 6
+>
+> Use the `agridat` package to visualise some agricultural data.
+>
+> Explore the `blackman.wheat` dataset from `agridat`. Generate a plot that shows the effect of fertiliser treatment across genotypes (`gen`) and sites (`loc`).
